@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WMT DOM Midterm Quiz</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      line-height: 1.55;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .panel {
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 14px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    }
+    .header {
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      margin: 0 0 10px;
+      font-size: 30px;
+      color: #f8fafc;
+    }
+    .muted { color: #94a3b8; }
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .legend .item {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .section-title {
+      margin: 28px 0 16px;
+      font-size: 22px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+    .question-card {
+      padding: 18px;
+      margin-bottom: 16px;
+      border-radius: 14px;
+      background: #111827;
+      border: 1px solid #334155;
+    }
+    .question-head {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+    .badge.single { background: #1d4ed8; }
+    .badge.multi { background: #7c3aed; }
+    .badge.extra { background: #047857; }
+    .meta-line {
+      font-size: 13px;
+      color: #93c5fd;
+      margin-bottom: 10px;
+    }
+    .question-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+    .question-text {
+      margin: 8px 0 12px;
+      color: #cbd5e1;
+    }
+    pre {
+      background: #020617;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      border-radius: 10px;
+      padding: 14px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 12px 0;
+    }
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+    .option {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+    .option:hover { background: #243247; }
+    .option.correct-option {
+      border-color: rgba(34, 197, 94, 0.65);
+      background: rgba(34, 197, 94, 0.14);
+    }
+    .option.wrong-picked {
+      border-color: rgba(239, 68, 68, 0.65);
+      background: rgba(239, 68, 68, 0.14);
+    }
+    .option.missed-correct {
+      border-color: rgba(245, 158, 11, 0.65);
+      background: rgba(245, 158, 11, 0.14);
+    }
+    input[type="checkbox"], input[type="radio"] {
+      margin-top: 3px;
+      transform: scale(1.08);
+    }
+    .feedback {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      border: 1px solid #334155;
+    }
+    .feedback.correct {
+      background: rgba(34, 197, 94, 0.14);
+      border-color: rgba(34, 197, 94, 0.4);
+    }
+    .feedback.wrong {
+      background: rgba(239, 68, 68, 0.14);
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+    .answer-line {
+      margin-top: 8px;
+      color: #fde68a;
+      font-weight: 700;
+    }
+    .results {
+      display: none;
+      margin: 24px 0;
+      padding: 22px;
+    }
+    .score {
+      font-size: 28px;
+      font-weight: 800;
+      color: #86efac;
+      margin-bottom: 14px;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .stat {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .stat strong {
+      display: block;
+      font-size: 20px;
+      color: #f8fafc;
+      margin-top: 6px;
+    }
+    .toolbar {
+      position: sticky;
+      bottom: 0;
+      padding: 16px 0 8px;
+      background: rgba(15, 23, 42, 0.96);
+      backdrop-filter: blur(8px);
+    }
+    .toolbar-inner {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-primary { background: #22c55e; color: #052e16; }
+    .btn-secondary { background: #334155; color: #e2e8f0; }
+    .btn-ghost { background: #0b1220; color: #cbd5e1; border: 1px solid #334155; }
+    @media (max-width: 640px) {
+      .container { padding: 16px; }
+      .header, .question-card, .results { padding: 16px; }
+      .header h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="panel header">
+      <h1>WMT DOM Midterm Quiz</h1>
+      <p class="muted">Topics: DOM structure, selectors, NodeList vs HTMLCollection, attributes, events, addEventListener, setTimeout, image handling, dynamic tables, forms, traversal, and code tracing.</p>
+      <p><strong>Instruction:</strong> Single-answer questions use radio buttons. Multiple-correct questions use checkboxes. The checker uses exact matching and highlights correct, missed, and wrong selections.</p>
+      <div class="legend">
+        <div class="item"><strong>Green</strong><br>Correct option selected</div>
+        <div class="item"><strong>Orange</strong><br>Correct option missed</div>
+        <div class="item"><strong>Red</strong><br>Wrong option selected</div>
+      </div>
+    </div>
+
+    <div id="quizForm"></div>
+    <div id="resultBox" class="panel results"></div>
+
+    <div class="toolbar">
+      <div class="toolbar-inner">
+        <button type="button" class="btn-primary" onclick="submitQuiz()">Submit Answers</button>
+        <button type="button" class="btn-secondary" onclick="resetQuiz()">Reset</button>
+        <button type="button" class="btn-ghost" onclick="showAnswerKey()">Show Full Answer Key</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        id: 'Q1', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'A web page contains multiple nested elements. When the browser loads the page, the HTML is converted into a hierarchical structure. Which statement best describes the DOM representation?',
+        options: {
+          a: 'The DOM represents HTML elements as independent objects without relationships',
+          b: 'The DOM represents HTML as a tree structure of nodes where each element becomes a node',
+          c: 'The DOM stores only visible HTML elements',
+          d: 'The DOM stores only CSS properties'
+        },
+        correct: ['b']
+      },
+      {
+        id: 'Q2', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Which statements correctly describe DOM nodes?',
+        options: {
+          a: 'Every HTML element becomes a node in the DOM',
+          b: 'Attributes are also nodes in the DOM',
+          c: 'Text inside elements can be represented as text nodes',
+          d: 'The DOM only stores visible elements',
+          e: 'The DOM hierarchy always starts from the window object'
+        },
+        correct: ['a', 'b', 'c']
+      },
+      {
+        id: 'Q3', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'Which object represents the entire HTML document?',
+        options: { a: 'window', b: 'body', c: 'document', d: 'DOM' },
+        correct: ['c']
+      },
+      {
+        id: 'Q4', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Which statements about document collections are correct?',
+        options: {
+          a: 'document.images returns a collection of <img> elements',
+          b: 'document.forms returns all form elements',
+          c: 'document.images returns only one image',
+          d: 'These collections are accessed using indexes',
+          e: 'Collections automatically return the first element'
+        },
+        correct: ['a', 'b', 'd']
+      },
+      {
+        id: 'Q5', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'Which method returns the first element that matches a CSS selector?',
+        options: { a: 'getElementById', b: 'querySelector', c: 'getElementsByClassName', d: 'querySelectorAll' },
+        correct: ['b']
+      },
+      {
+        id: 'Q6', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Which methods can retrieve multiple DOM elements?',
+        options: {
+          a: 'getElementsByTagName',
+          b: 'getElementsByClassName',
+          c: 'querySelectorAll',
+          d: 'getElementById',
+          e: 'document.images'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'Q7', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'Which method returns a non-live NodeList?',
+        options: { a: 'getElementsByClassName', b: 'querySelectorAll', c: 'getElementsByTagName', d: 'document.forms' },
+        correct: ['b']
+      },
+      {
+        id: 'Q8', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Which statements about live vs static lists are true?',
+        options: {
+          a: 'getElementsByClassName() returns a live list',
+          b: 'querySelectorAll() returns a static list',
+          c: 'Live lists update automatically when DOM changes',
+          d: 'Static lists update automatically when DOM changes',
+          e: 'Both behave exactly the same'
+        },
+        correct: ['a', 'b', 'c']
+      },
+      {
+        id: 'Q9', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'What will this statement return? element.hasAttribute("src")',
+        code: `element.hasAttribute("src")`,
+        options: { a: 'true if attribute exists', b: 'src value', c: 'HTML element', d: 'attribute node' },
+        correct: ['a']
+      },
+      {
+        id: 'Q10', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Which methods are used to manipulate attributes?',
+        options: {
+          a: 'getAttribute()',
+          b: 'setAttribute()',
+          c: 'removeAttribute()',
+          d: 'createAttribute()',
+          e: 'hasAttribute()'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'Q11', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'Which event occurs when a key is released?',
+        options: { a: 'keypress', b: 'keydown', c: 'keyup', d: 'keyclick' },
+        correct: ['c']
+      },
+      {
+        id: 'Q12', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Which events are mouse events?',
+        options: { a: 'mouseover', b: 'mouseout', c: 'keyup', d: 'click', e: 'dblclick' },
+        correct: ['a', 'b', 'd', 'e']
+      },
+      {
+        id: 'Q13', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'Which statement correctly describes addEventListener()?',
+        options: {
+          a: 'It replaces existing event handlers',
+          b: 'It allows multiple handlers on one element',
+          c: 'It works only for mouse events',
+          d: 'It must be written inside HTML attributes'
+        },
+        correct: ['b']
+      },
+      {
+        id: 'Q14', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Advantages of using addEventListener():',
+        options: {
+          a: 'Allows multiple event listeners',
+          b: 'Separates HTML and JavaScript',
+          c: 'Improves maintainability',
+          d: 'Automatically removes previous listeners',
+          e: 'Supports event capturing'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'Q15', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'What is printed in the console if the page contains 5 paragraphs?',
+        code: `let elements = document.getElementsByTagName("p");\nconsole.log(elements.length);`,
+        options: { a: '0', b: '1', c: '5', d: 'undefined' },
+        correct: ['c']
+      },
+      {
+        id: 'Q16', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Consider: const elements = document.querySelectorAll(".card"); Which statements are correct?',
+        code: `const elements = document.querySelectorAll(".card");`,
+        options: {
+          a: 'It returns NodeList',
+          b: 'It returns HTMLCollection',
+          c: 'It returns static list',
+          d: 'It returns live list',
+          e: 'It supports forEach'
+        },
+        correct: ['a', 'c', 'e']
+      },
+      {
+        id: 'Q17', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'What does this code do?',
+        code: `document.title = "Travel Adventures – DOM Lab";`,
+        options: { a: 'Changes page heading', b: 'Changes browser tab title', c: 'Changes URL', d: 'Changes document body' },
+        correct: ['b']
+      },
+      {
+        id: 'Q18', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'What will happen?',
+        code: `setTimeout(function(){\n  document.body.style.backgroundColor = "blue";\n}, 2000);`,
+        options: {
+          a: 'Background changes immediately',
+          b: 'Background changes after 2 seconds',
+          c: 'Code runs repeatedly',
+          d: 'Code never executes'
+        },
+        correct: ['b']
+      },
+      {
+        id: 'Q19', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Which statements about setTimeout() are true?',
+        options: {
+          a: 'Executes code after delay',
+          b: 'Delay is measured in milliseconds',
+          c: 'Can execute anonymous functions',
+          d: 'Runs repeatedly forever',
+          e: 'Used for delayed UI changes'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'Q20', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'What is the purpose of this code?',
+        code: `let img = new Image();\nimg.src = "images/photo.jpg";`,
+        options: { a: 'Replace image', b: 'Preload image', c: 'Delete image', d: 'Change CSS' },
+        correct: ['b']
+      },
+      {
+        id: 'Q21', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Which statements about image preloading are correct?',
+        options: {
+          a: 'Loads images into browser cache',
+          b: 'Improves performance when switching images',
+          c: 'Prevents image flicker',
+          d: 'Requires DOM refresh',
+          e: 'Uses Image() constructor'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'Q22', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'What will this code output?',
+        code: `let items = document.querySelectorAll("p");\nfor(let i=0;i<items.length;i++){\n  items[i].textContent = "Hello";\n}`,
+        options: {
+          a: 'Only first paragraph changes',
+          b: 'All paragraphs change text',
+          c: 'Only last paragraph changes',
+          d: 'Code produces error'
+        },
+        correct: ['b']
+      },
+      {
+        id: 'Q23', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Consider live and static lists.',
+        code: `let live = document.getElementsByClassName("box");\nlet staticList = document.querySelectorAll(".box");`,
+        options: {
+          a: 'live updates automatically',
+          b: 'staticList updates automatically',
+          c: 'staticList length remains constant',
+          d: 'live length updates when new elements added',
+          e: 'both lists behave the same'
+        },
+        correct: ['a', 'c', 'd']
+      },
+      {
+        id: 'Q24', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'What will be printed if there are 4 <p> elements inside <div> tags?',
+        code: `let x = document.querySelectorAll("div p");\nconsole.log(x.length);`,
+        options: { a: '1', b: '2', c: '4', d: '0' },
+        correct: ['c']
+      },
+      {
+        id: 'Q25', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Clicking the button prints:',
+        code: `let btn = document.getElementById("btn");\n\nbtn.addEventListener("click", function(){\n  console.log("A");\n});\n\nbtn.addEventListener("click", function(){\n  console.log("B");\n});`,
+        options: {
+          a: 'A',
+          b: 'B',
+          c: 'A then B',
+          d: 'B then A',
+          e: 'Only one output'
+        },
+        correct: ['a', 'b', 'c']
+      },
+      {
+        id: 'Q26', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'Why is event.preventDefault() used in form submission?',
+        options: { a: 'stop DOM execution', b: 'stop page refresh', c: 'stop event listener', d: 'stop user typing' },
+        correct: ['b']
+      },
+      {
+        id: 'Q27', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Which tasks are required when handling form submission with DOM?',
+        options: {
+          a: 'read input values',
+          b: 'prevent page reload',
+          c: 'update DOM dynamically',
+          d: 'send CSS to server',
+          e: 'validate inputs'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'Q28', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'Which method inserts a new row into a table?',
+        options: { a: 'addRow()', b: 'insertRow()', c: 'appendRow()', d: 'createRow()' },
+        correct: ['b']
+      },
+      {
+        id: 'Q29', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Which methods are used when dynamically building tables?',
+        options: {
+          a: 'insertRow()',
+          b: 'insertCell()',
+          c: 'createElement()',
+          d: 'appendChild()',
+          e: 'setCell()'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        id: 'Q30', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'What happens here?',
+        code: `let items = document.getElementsByTagName("p");\n\nfor(let i=0;i<items.length;i+=2){\n  items[i].style.color = "green";\n}`,
+        options: {
+          a: 'all paragraphs become green',
+          b: 'only even indexed paragraphs change',
+          c: 'only odd indexed paragraphs change',
+          d: 'no paragraphs change'
+        },
+        correct: ['b']
+      },
+      {
+        id: 'Q31', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'What does the third parameter of addEventListener() control?',
+        options: {
+          a: 'DOM node selection',
+          b: 'event propagation (capturing/bubbling)',
+          c: 'event priority',
+          d: 'event removal'
+        },
+        correct: ['b']
+      },
+      {
+        id: 'Q32', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Which statements about event bubbling are correct?',
+        options: {
+          a: 'Event propagates from child to parent',
+          b: 'Default behavior of addEventListener',
+          c: 'Capturing occurs before bubbling',
+          d: 'Bubbling can be stopped',
+          e: 'Bubbling occurs only for keyboard events'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        id: 'Q33', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'What is printed if the button is clicked 3 times?',
+        code: `let count = 0;\n\ndocument.querySelector("#btn").addEventListener("click", function(){\n  count++;\n  console.log(count);\n});`,
+        options: { a: '1', b: '2', c: '3', d: '1 2 3' },
+        correct: ['d']
+      },
+      {
+        id: 'Q34', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Which statements about this counter program are correct?',
+        options: {
+          a: 'count stored in memory',
+          b: 'event triggered on click',
+          c: 'DOM updated each click',
+          d: 'event executes only once',
+          e: 'variable persists between clicks'
+        },
+        correct: ['a', 'b', 'e']
+      },
+      {
+        id: 'Q35', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'What type of node is the text inside an HTML element?',
+        options: { a: 'element node', b: 'attribute node', c: 'text node', d: 'document node' },
+        correct: ['c']
+      },
+      {
+        id: 'Q36', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Which nodes exist in DOM tree?',
+        options: {
+          a: 'element nodes',
+          b: 'attribute nodes',
+          c: 'text nodes',
+          d: 'document node',
+          e: 'CSS nodes'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        id: 'Q37', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'What happens when this executes?',
+        code: `let img = document.querySelector("img");\n\nimg.ondblclick = function(){\n  img.src = "image2.jpg";\n};`,
+        options: {
+          a: 'image removed',
+          b: 'image replaced on double click',
+          c: 'image hidden',
+          d: 'image duplicated'
+        },
+        correct: ['b']
+      },
+      {
+        id: 'Q38', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Which events could be used for image interaction?',
+        options: { a: 'click', b: 'dblclick', c: 'mouseover', d: 'mouseout', e: 'keypress' },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        id: 'Q39', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'What is printed?',
+        code: `let a = [1,2,3];\n\na.forEach(function(x){\n  console.log(x*2);\n});`,
+        options: { a: '1 2 3', b: '2 4 6', c: '1 4 9', d: 'error' },
+        correct: ['b']
+      },
+      {
+        id: 'Q40', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Which methods return DOM collections?',
+        options: {
+          a: 'getElementsByClassName',
+          b: 'getElementsByTagName',
+          c: 'querySelectorAll',
+          d: 'getElementById',
+          e: 'document.forms'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'Q41', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'Which property reads the value typed into an input field?',
+        options: { a: 'textContent', b: 'value', c: 'innerHTML', d: 'attribute' },
+        correct: ['b']
+      },
+      {
+        id: 'Q42', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Which properties modify element content?',
+        options: {
+          a: 'innerText',
+          b: 'textContent',
+          c: 'innerHTML',
+          d: 'value',
+          e: 'src'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        id: 'Q43', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'Which event occurs when browser window size changes?',
+        options: { a: 'window.onload', b: 'window.resize', c: 'window.onresize', d: 'window.change' },
+        correct: ['c']
+      },
+      {
+        id: 'Q44', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Object level events include:',
+        options: {
+          a: 'window resize',
+          b: 'document load',
+          c: 'form submit',
+          d: 'keyboard input',
+          e: 'click event'
+        },
+        correct: ['a', 'b']
+      },
+      {
+        id: 'Q45', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'What is printed?',
+        code: `console.log(typeof document);`,
+        options: { a: 'object', b: 'DOM', c: 'HTML', d: 'node' },
+        correct: ['a']
+      },
+      {
+        id: 'Q46', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Which properties belong to document object?',
+        options: { a: 'URL', b: 'title', c: 'lastModified', d: 'forms', e: 'images' },
+        correct: ['a', 'b', 'c', 'd', 'e']
+      },
+      {
+        id: 'Q47', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'Which method removes an event listener?',
+        options: { a: 'deleteEventListener', b: 'removeEventListener', c: 'stopListener', d: 'detachEvent' },
+        correct: ['b']
+      },
+      {
+        id: 'Q48', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Which are DOM event categories?',
+        options: { a: 'mouse events', b: 'keyboard events', c: 'form events', d: 'object events', e: 'CSS events' },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        id: 'Q49', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'single', type: 'Single Answer',
+        text: 'Which method creates a new HTML element?',
+        options: { a: 'createNode', b: 'createElement', c: 'addElement', d: 'newElement' },
+        correct: ['b']
+      },
+      {
+        id: 'Q50', section: 'HARD MIDTERM QUESTIONS (50)', badge: 'multi', type: 'Multiple Correct',
+        text: 'Which operations are involved in dynamic DOM updates?',
+        options: {
+          a: 'reading input values',
+          b: 'creating new nodes',
+          c: 'inserting nodes into DOM',
+          d: 'attaching events',
+          e: 'modifying CSS'
+        },
+        correct: ['a', 'b', 'c', 'd', 'e']
+      },
+
+      {
+        id: 'X1', section: 'ADVANCED WEB & MOBILE TECHNOLOGY QUESTIONS (11)', badge: 'extra', type: 'Multiple Correct',
+        text: 'Consider the following HTML and CSS. Which statements are correct?',
+        code: `<!DOCTYPE html>\n<html>\n<head>\n<style>\n\n.container div{\n  color: red;\n}\n\n.container .item{\n  color: green;\n}\n\n.highlight{\n  color: blue;\n}\n\n</style>\n</head>\n<body>\n<div class="container">\n  <div class="item">Item A</div>\n  <div class="item highlight">Item B</div>\n  <div>Item C</div>\n</div>\n</body>\n</html>`,
+        options: {
+          a: 'Item A will appear green',
+          b: 'Item B will appear blue',
+          c: 'Item C will appear red',
+          d: 'Item B will appear green because .container .item has higher specificity',
+          e: 'Item A will appear red'
+        },
+        correct: ['a', 'c', 'd']
+      },
+      {
+        id: 'X2', section: 'ADVANCED WEB & MOBILE TECHNOLOGY QUESTIONS (11)', badge: 'extra', type: 'Multiple Correct',
+        text: 'Analyze the following JavaScript code. Assume the page contains 5 elements with class box. Which statements are correct?',
+        code: `const items = document.querySelectorAll(".box");\n\nitems.forEach(function(element,index){\n  if(index % 2 === 0){\n    element.style.backgroundColor = "yellow";\n  }\n  else{\n    element.style.backgroundColor = "green";\n  }\n});`,
+        options: {
+          a: 'Element index 0,2,4 become yellow',
+          b: 'Element index 1,3 become green',
+          c: 'All elements become green',
+          d: 'querySelectorAll returns a NodeList',
+          e: 'forEach cannot be used with NodeList'
+        },
+        correct: ['a', 'b', 'd']
+      },
+      {
+        id: 'X3', section: 'ADVANCED WEB & MOBILE TECHNOLOGY QUESTIONS (11)', badge: 'extra', type: 'Single Answer',
+        text: 'What will be printed?',
+        code: `let elements = document.getElementsByClassName("item");\n\nconsole.log(elements.length);\n\nlet newDiv = document.createElement("div");\nnewDiv.className = "item";\n\ndocument.body.appendChild(newDiv);\n\nconsole.log(elements.length);`,
+        options: { a: '3 then 3', b: '3 then 4', c: '4 then 4', d: '3 then undefined' },
+        correct: ['b']
+      },
+      {
+        id: 'X4', section: 'ADVANCED WEB & MOBILE TECHNOLOGY QUESTIONS (11)', badge: 'extra', type: 'Multiple Correct',
+        text: 'When the button is clicked once, what will happen?',
+        code: `const button = document.getElementById("btn");\n\nbutton.addEventListener("click", function(){\n  console.log("First");\n});\n\nbutton.addEventListener("click", function(){\n  console.log("Second");\n});\n\nbutton.onclick = function(){\n  console.log("Third");\n};`,
+        options: {
+          a: 'First will print',
+          b: 'Second will print',
+          c: 'Third will print',
+          d: 'Only Third will execute',
+          e: 'First and Second will execute before Third'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'X5', section: 'ADVANCED WEB & MOBILE TECHNOLOGY QUESTIONS (11)', badge: 'extra', type: 'Single Answer',
+        text: 'What will be the output?',
+        code: `let text = "";\nfor(let i=1;i<=5;i++){\n  if(i==4){\n    break;\n  }\n  text += i + " ";\n}\nconsole.log(text);`,
+        options: { a: '1 2 3 ', b: '1 2 3 4 ', c: '1 2 3 4 5 ', d: '1 2 3 5 ' },
+        correct: ['a']
+      },
+      {
+        id: 'X6', section: 'ADVANCED WEB & MOBILE TECHNOLOGY QUESTIONS (11)', badge: 'extra', type: 'Multiple Correct',
+        text: 'Which statements are correct?',
+        code: `let elements = document.querySelectorAll("p");\n\nfor(let i=0;i<elements.length;i++){\n  elements[i].setAttribute("class","highlight");\n}`,
+        options: {
+          a: 'All <p> elements receive class highlight',
+          b: 'querySelectorAll returns NodeList',
+          c: 'This code overwrites existing classes',
+          d: 'This code adds a class without replacing existing ones',
+          e: 'setAttribute modifies element attributes'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'X7', section: 'ADVANCED WEB & MOBILE TECHNOLOGY QUESTIONS (11)', badge: 'extra', type: 'Single Answer',
+        text: 'If the button is clicked 4 times, what will be printed?',
+        code: `let count = 0;\n\nfunction add(){\n  count++;\n  console.log(count);\n}\n\ndocument.getElementById("btn").addEventListener("click", add);`,
+        options: { a: '1 2 3 4', b: '4', c: '1', d: '0 1 2 3' },
+        correct: ['a']
+      },
+      {
+        id: 'X8', section: 'ADVANCED WEB & MOBILE TECHNOLOGY QUESTIONS (11)', badge: 'extra', type: 'Multiple Correct',
+        text: 'Which statements are correct?',
+        code: `let list = document.getElementsByTagName("li");\n\nfor(let i=0;i<list.length;i++){\n  if(i%2==0){\n    list[i].style.color = "red";\n  }\n  else{\n    list[i].style.color = "blue";\n  }\n}`,
+        options: {
+          a: 'Even indexed list items become red',
+          b: 'Odd indexed list items become blue',
+          c: 'All items become blue',
+          d: 'getElementsByTagName returns HTMLCollection',
+          e: 'HTMLCollection is live'
+        },
+        correct: ['a', 'b', 'd', 'e']
+      },
+      {
+        id: 'X9', section: 'ADVANCED WEB & MOBILE TECHNOLOGY QUESTIONS (11)', badge: 'extra', type: 'Multiple Correct',
+        text: 'Analyze the following code. Which statements are correct?',
+        code: `let img = document.querySelector("img");\n\nlet img2 = new Image();\nimg2.src = "image2.jpg";\n\nimg.ondblclick = function(){\n  if(img.src.includes("image1")){\n    img.src = "image2.jpg";\n  }\n  else{\n    img.src = "image1.jpg";\n  }\n};`,
+        options: {
+          a: 'Image changes when double clicked',
+          b: 'Image toggles between two images',
+          c: 'new Image() preloads the second image',
+          d: 'ondblclick triggers when user clicks once',
+          e: 'Image replacement happens instantly if cached'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'X10', section: 'ADVANCED WEB & MOBILE TECHNOLOGY QUESTIONS (11)', badge: 'extra', type: 'Single Answer',
+        text: 'What will be printed?',
+        code: `let i = 1;\n\nlet result = "";\n\nwhile(i<=6){\n  if(i==3){\n    i++;\n    continue;\n  }\n  result += i + " ";\n  i++;\n}\n\nconsole.log(result);`,
+        options: { a: '1 2 4 5 6', b: '1 2 3 4 5 6', c: '1 2 3 5 6', d: '1 2 4 5' },
+        correct: ['a']
+      },
+      {
+        id: 'X11', section: 'ADVANCED WEB & MOBILE TECHNOLOGY QUESTIONS (11)', badge: 'extra', type: 'Multiple Correct',
+        text: 'Which statements are correct?',
+        code: `<style>\n#title{\n  color:red;\n}\n.header{\n  color:blue;\n}\nh1{\n  color:green;\n}\n</style>\n\n<h1 id="title" class="header">Welcome</h1>`,
+        options: {
+          a: 'Text appears red',
+          b: 'Text appears blue',
+          c: 'Text appears green',
+          d: 'ID selector has highest specificity',
+          e: 'Class selector overrides ID selector'
+        },
+        correct: ['a', 'd']
+      }
+    ];
+
+    const badgeClassMap = { single: 'single', multi: 'multi', extra: 'extra' };
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function renderQuiz() {
+      const container = document.getElementById('quizForm');
+      let currentSection = '';
+      let html = '';
+
+      questions.forEach((q, index) => {
+        if (q.section !== currentSection) {
+          currentSection = q.section;
+          html += `<div class="section-title">${escapeHtml(currentSection)}</div>`;
+        }
+
+        const inputType = q.type === 'Single Answer' ? 'radio' : 'checkbox';
+        const optionsHtml = Object.entries(q.options).map(([key, value]) => `
+          <label class="option" data-question="${q.id}" data-option="${key}">
+            <input type="${inputType}" name="${q.id}" value="${key}">
+            <span><strong>${key}.</strong> ${escapeHtml(value)}</span>
+          </label>
+        `).join('');
+
+        html += `
+          <div class="question-card" id="card-${q.id}">
+            <div class="question-head">
+              <span class="badge ${badgeClassMap[q.badge] || ''}">${q.id}</span>
+              <div class="question-title">Question ${index + 1}</div>
+            </div>
+            <div class="meta-line">${escapeHtml(q.type)}</div>
+            <div class="question-text">${escapeHtml(q.text)}</div>
+            ${q.code ? `<pre>${escapeHtml(q.code)}</pre>` : ''}
+            <div class="options">${optionsHtml}</div>
+            <div class="feedback" id="feedback-${q.id}"></div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function normalize(arr) {
+      return [...arr].sort();
+    }
+
+    function exactMatch(selected, correct) {
+      const a = normalize(selected);
+      const b = normalize(correct);
+      return a.length === b.length && a.every((v, i) => v === b[i]);
+    }
+
+    function clearOptionHighlights() {
+      document.querySelectorAll('.option').forEach(label => {
+        label.classList.remove('correct-option', 'wrong-picked', 'missed-correct');
+      });
+    }
+
+    function submitQuiz() {
+      clearOptionHighlights();
+      let correctCount = 0;
+      let wrongCount = 0;
+
+      questions.forEach((q) => {
+        const selectedInputs = [...document.querySelectorAll(`input[name="${q.id}"]:checked`)];
+        const selected = selectedInputs.map(input => input.value);
+        const feedback = document.getElementById(`feedback-${q.id}`);
+        const isExact = exactMatch(selected, q.correct);
+
+        Object.keys(q.options).forEach((key) => {
+          const label = document.querySelector(`label[data-question="${q.id}"][data-option="${key}"]`);
+          const isSelected = selected.includes(key);
+          const isCorrect = q.correct.includes(key);
+
+          if (isCorrect && isSelected) {
+            label.classList.add('correct-option');
+          } else if (!isCorrect && isSelected) {
+            label.classList.add('wrong-picked');
+          } else if (isCorrect && !isSelected) {
+            label.classList.add('missed-correct');
+          }
+        });
+
+        feedback.style.display = 'block';
+
+        if (isExact) {
+          correctCount++;
+          feedback.className = 'feedback correct';
+          feedback.innerHTML = `Correct.<div class="answer-line">Answer: ${q.correct.join(', ')}</div>`;
+        } else {
+          wrongCount++;
+          feedback.className = 'feedback wrong';
+          feedback.innerHTML = `Incorrect.<div class="answer-line">Correct answer(s): ${q.correct.join(', ')}</div>`;
+        }
+      });
+
+      const percentage = ((correctCount / questions.length) * 100).toFixed(2);
+      const resultBox = document.getElementById('resultBox');
+      resultBox.style.display = 'block';
+      resultBox.innerHTML = `
+        <div class="score">Score: ${correctCount} / ${questions.length} (${percentage}%)</div>
+        <div class="stats">
+          <div class="stat">Total Questions<strong>${questions.length}</strong></div>
+          <div class="stat">Correct<strong>${correctCount}</strong></div>
+          <div class="stat">Incorrect<strong>${wrongCount}</strong></div>
+          <div class="stat">Accuracy<strong>${percentage}%</strong></div>
+        </div>
+      `;
+      resultBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function resetQuiz() {
+      document.querySelectorAll('input').forEach(input => { input.checked = false; });
+      clearOptionHighlights();
+      document.querySelectorAll('.feedback').forEach(box => {
+        box.style.display = 'none';
+        box.className = 'feedback';
+        box.innerHTML = '';
+      });
+      const resultBox = document.getElementById('resultBox');
+      resultBox.style.display = 'none';
+      resultBox.innerHTML = '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showAnswerKey() {
+      clearOptionHighlights();
+      questions.forEach((q) => {
+        Object.keys(q.options).forEach((key) => {
+          const label = document.querySelector(`label[data-question="${q.id}"][data-option="${key}"]`);
+          if (q.correct.includes(key)) {
+            label.classList.add('correct-option');
+          }
+        });
+        const feedback = document.getElementById(`feedback-${q.id}`);
+        feedback.style.display = 'block';
+        feedback.className = 'feedback correct';
+        feedback.innerHTML = `<div class="answer-line">Correct answer(s): ${q.correct.join(', ')}</div>`;
+      });
+      const resultBox = document.getElementById('resultBox');
+      resultBox.style.display = 'block';
+      resultBox.innerHTML = `
+        <div class="score">Full Answer Key Displayed</div>
+        <div class="stats">
+          <div class="stat">Questions<strong>${questions.length}</strong></div>
+          <div class="stat">Mode<strong>Answer Key</strong></div>
+        </div>
+      `;
+      resultBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    renderQuiz();
+  </script>
+</body>
+</html>

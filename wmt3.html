@@ -1,593 +1,652 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Advanced Web Technology MSQ Quiz</title>
-<style>
-body{font-family:Arial,Helvetica,sans-serif;background:#f4f6f8;margin:0;padding:40px}
-.container{max-width:1100px;margin:auto;background:white;padding:40px;border-radius:8px;box-shadow:0 4px 10px rgba(0,0,0,0.08)}
-h1{text-align:center}
-.question{margin-top:30px;padding:15px;border:1px solid #e3e3e3;border-radius:6px}
-.options label{display:block;margin:6px 0;cursor:pointer}
-button{margin-top:30px;padding:12px 20px;font-size:16px;border:none;background:#2b7cff;color:white;border-radius:6px;cursor:pointer}
-.correct{background:#d4edda}
-.wrong{background:#f8d7da}
-.missed{background:#fff3cd}
-.result{font-weight:bold;margin-top:20px;font-size:18px}
-code{background:#f1f1f1;padding:3px 6px;border-radius:4px}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Web Technology MSQ Quiz</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 40px
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08)
+        }
+
+        h1 {
+            text-align: center
+        }
+
+        .question {
+            margin-top: 30px;
+            padding: 15px;
+            border: 1px solid #e3e3e3;
+            border-radius: 6px
+        }
+
+        .options label {
+            display: block;
+            margin: 6px 0;
+            cursor: pointer
+        }
+
+        button {
+            margin-top: 30px;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            background: #2b7cff;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer
+        }
+
+        .correct {
+            background: #d4edda
+        }
+
+        .wrong {
+            background: #f8d7da
+        }
+
+        .missed {
+            background: #fff3cd
+        }
+
+        .result {
+            font-weight: bold;
+            margin-top: 20px;
+            font-size: 18px
+        }
+
+        code {
+            background: #f1f1f1;
+            padding: 3px 6px;
+            border-radius: 4px
+        }
+    </style>
 </head>
+
 <body>
-<div class="container">
-
-<h1>Advanced WMT Midterm MSQ Quiz</h1>
-<p>Select ALL correct answers.</p>
-
-<form id="quizForm"></form>
-
-<button onclick="submitQuiz()" type="button">Submit Answers</button>
-
-<div id="result" class="result"></div>
-
-</div>
-
-<script>
-
-const questions=[
-
-{
-q:"1. Full Web Request Hierarchy — Which events occur before rendering?",
-options:[
-"Browser resolves domain using DNS",
-"Browser establishes TCP connection",
-"Browser sends HTTP request",
-"Server processes request",
-"Browser constructs DOM tree"
-],
-correct:[0,1,2,3,4]
-},
-
-{
-q:"2. DNS Resolution Hierarchy — Which may participate?",
-options:[
-"Browser cache",
-"Local DNS resolver",
-"Root DNS server",
-"TLD server (.com)",
-"Authoritative DNS server"
-],
-correct:[0,1,2,3,4]
-},
-
-{
-q:"3. DOM Tree Hierarchy relationships",
-options:[
-"<body> parent of <div>",
-"<div> parent of <section>",
-"<section> parent of <p>",
-"<h1> sibling of <section>",
-"<p> sibling of <div>"
-],
-correct:[0,1,2,3]
-},
-
-{
-q:"4. CSS Specificity",
-options:[
-"Both rules target <p>",
-"Blue overrides red",
-"ID selector higher specificity",
-"Text becomes red",
-"Text becomes blue"
-],
-correct:[0,1,2,4]
-},
-
-{
-q:"5. HTML Nested List",
-options:[
-"Outer ul has two li children",
-"Inner ul nested inside second li",
-"Team and Contact grandchildren of outer ul",
-"div ancestor of all elements",
-"About contains nested list"
-],
-correct:[0,1,3,4]
-},
-
-{
-q:"6. Browser Rendering Pipeline",
-options:[
-"Parse HTML",
-"Build DOM tree",
-"Load CSS",
-"Build Render Tree",
-"Paint layout"
-],
-correct:[0,1,2,3,4]
-},
-
-{
-q:"7. JavaScript Capabilities",
-options:[
-"Form validation",
-"DOM manipulation",
-"Update page dynamically",
-"Direct server database queries",
-"Client calculations"
-],
-correct:[0,1,2,4]
-},
-
-{
-q:"8. Navigation DOM hierarchy",
-options:[
-"ul parent of li",
-"li elements siblings",
-"a children of li",
-"a elements siblings",
-"ul ancestor of a"
-],
-correct:[0,1,2,3,4]
-},
-
-{
-q:"9. HTML layout hierarchy",
-options:[
-"Header section footer siblings",
-"p inside section descendant of body",
-"h1 child of header",
-"footer parent of p",
-"section ancestor of h1"
-],
-correct:[0,1,2,3]
-},
-
-{
-q:"10. URL Components",
-options:[
-"Protocol https",
-"Subdomain api",
-"Domain example.com",
-"Port 443",
-"Query id=25"
-],
-correct:[0,1,2,3,4]
-},
-
-{
-q:"11. HTML container hierarchy",
-options:[
-"container root of snippet",
-"content child of container",
-"Paragraphs siblings",
-"h1 sibling of content",
-"h1 parent of paragraphs"
-],
-correct:[0,1,2,3]
-},
-
-{
-q:"12. Table structure",
-options:[
-"Table has 3 rows",
-"th header cells",
-"td data cells",
-"Each tr has two cells",
-"table parent of td"
-],
-correct:[0,1,2,3,4]
-},
-
-{
-q:"13. CSS row styling",
-options:[
-"CSS class applied to row",
-"row1 applies to tr",
-"row1 affects cells visually",
-"row1 changes width",
-"row1 sets background"
-],
-correct:[0,1,2,4]
-},
-
-{
-q:"14. Inline CSS",
-options:[
-"Inline CSS on h1",
-"Text centered",
-"Text color blue",
-"Inline overrides external normally",
-"Style applies entire document"
-],
-correct:[0,1,2,3]
-},
-
-{
-q:"15. Navigation CSS",
-options:[
-"Targets li inside nav",
-"Items horizontal",
-"Margin between items",
-"ul becomes horizontal",
-"li remains block"
-],
-correct:[0,1,2]
-},
-
-{
-q:"16. CSS selector hierarchy",
-options:[
-"p inside #main",
-"p outside main",
-"p descendants of main",
-"div id main",
-"nested p inside children"
-],
-correct:[0,2,4]
-},
-
-{
-q:"17. HTML grouping",
-options:[
-"div groups elements",
-"img sibling of a",
-"img parent of a",
-"div ancestor of a",
-"img descendant of div"
-],
-correct:[0,1,3,4]
-},
-
-{
-q:"18. Embedded CSS",
-options:[
-"CSS embedded in HTML",
-"Styles apply to p",
-"Inside style tag",
-"Affects page",
-"External CSS required"
-],
-correct:[0,1,2,3]
-},
-
-{
-q:"19. CSS class reuse",
-options:[
-"Class can style multiple elements",
-"Class uses dot syntax",
-"Class reused in HTML",
-"Class names must be unique",
-"Improves reuse"
-],
-correct:[0,1,2,4]
-},
-
-{
-q:"20. External CSS linking",
-options:[
-"<link rel='stylesheet' href='style.css'>",
-"<script src='style.css'>",
-"<link href='style.css'>",
-"<style src='style.css'>",
-"<link rel='css'>"
-],
-correct:[0]
-},
-
-{
-q:"21. JavaScript variable scope",
-options:[
-"var function scoped",
-"let block scoped",
-"const cannot be reassigned",
-"const must be initialized",
-"var cannot be redeclared"
-],
-correct:[0,1,2,3]
-},
-
-{
-q:"22. If condition",
-options:[
-"Condition true",
-"A printed",
-"B printed",
-"if block executed",
-"else skipped"
-],
-correct:[0,1,3,4]
-},
-
-{
-q:"23. Chained conditions",
-options:[
-"age < 12 false",
-"Second condition true",
-"Result becomes 10$",
-"Last block executed",
-"Uses chained conditions"
-],
-correct:[0,1,2,4]
-},
-
-{
-q:"24. Switch execution",
-options:[
-"case 2 executed",
-"msg Tue",
-"break prevents fallthrough",
-"default skipped",
-"case 1 executed"
-],
-correct:[0,1,2,3]
-},
-
-{
-q:"25. For loop",
-options:[
-"Loop runs 3 times",
-"Outputs 0 1 2",
-"i block scoped",
-"Condition checked each iteration",
-"Increment after body"
-],
-correct:[0,1,2,3,4]
-},
-
-{
-q:"26. While loop",
-options:[
-"Runs 3 times",
-"Prints 0 1 2",
-"Condition evaluated before",
-"Infinite loop",
-"Increment inside"
-],
-correct:[0,1,2,4]
-},
-
-{
-q:"27. Do while",
-options:[
-"Runs once",
-"Prints 5",
-"Condition checked after",
-"Loop skipped",
-"Guarantees one run"
-],
-correct:[0,1,2,4]
-},
-
-{
-q:"28. Logical AND",
-options:[
-"Both conditions true",
-"Logical AND used",
-"Output valid",
-"Condition false",
-"Both expressions evaluated"
-],
-correct:[0,1,2,4]
-},
-
-{
-q:"29. Array basics",
-options:[
-"Array has 3 elements",
-"Index starts 0",
-"arr[0] A",
-"arr[2] C",
-"arr[3] exists"
-],
-correct:[0,1,2,3]
-},
-
-{
-q:"30. Array length",
-options:[
-"Output 3",
-"length property",
-"Counts elements",
-"Length equals last index",
-"Length dynamic"
-],
-correct:[0,1,2,4]
-},
-
-{
-q:"31. Function definition",
-options:[
-"Function defined",
-"Parameters a b",
-"Returns sum",
-"Called automatically",
-"Return exits function"
-],
-correct:[0,1,2,4]
-},
-
-{
-q:"32. Function call",
-options:[
-"Function executed",
-"Result 5",
-"Parameters receive arguments",
-"Return stored in result",
-"Function called once"
-],
-correct:[0,1,2,3,4]
-},
-
-{
-q:"33. DOM interaction",
-options:[
-"Select element by id",
-"Change HTML content",
-"Modify DOM",
-"Requires element id message",
-"Updates page dynamically"
-],
-correct:[0,1,2,3,4]
-},
-
-{
-q:"34. Event handling",
-options:[
-"Click event assigned",
-"Function executes on click",
-"Alert shown",
-"Triggered automatically",
-"Anonymous function"
-],
-correct:[0,1,2,4]
-},
-
-{
-q:"35. Primitive types",
-options:[
-"String",
-"Number",
-"Boolean",
-"Object",
-"Undefined"
-],
-correct:[0,1,2,4]
-},
-
-{
-q:"36. Comparison operators",
-options:[
-"==",
-"===",
-"!=",
-">=",
-"++"
-],
-correct:[0,1,2,3]
-},
-
-{
-q:"37. Loose equality",
-options:[
-"Result true",
-"Type conversion occurs",
-"Loose equality",
-"Strict equality",
-"Both same type"
-],
-correct:[0,1,2]
-},
-
-{
-q:"38. Strict equality",
-options:[
-"Result false",
-"Type conversion occurs",
-"Strict equality",
-"Values equal but types differ",
-"Comparison fails"
-],
-correct:[0,2,3,4]
-},
-
-{
-q:"39. JavaScript output methods",
-options:[
-"alert()",
-"document.write()",
-"console.log()",
-"innerHTML",
-"print()"
-],
-correct:[0,1,2,3]
-},
-
-{
-q:"40. DOM update flow",
-options:[
-"Event triggered",
-"JS executed",
-"DOM modified",
-"Browser re-renders",
-"Server request required"
-],
-correct:[0,1,2,3]
-}
-
-];
-
-const form=document.getElementById("quizForm");
-
-questions.forEach((q,i)=>{
-
-let div=document.createElement("div");
-div.className="question";
-
-let title=document.createElement("h3");
-title.innerText=q.q;
-div.appendChild(title);
-
-let optDiv=document.createElement("div");
-optDiv.className="options";
-
-q.options.forEach((opt,j)=>{
-
-let label=document.createElement("label");
-let checkbox=document.createElement("input");
-checkbox.type="checkbox";
-checkbox.name="q"+i;
-checkbox.value=j;
-
-label.appendChild(checkbox);
-label.append(" "+opt);
-
-optDiv.appendChild(label);
-
-});
-
-div.appendChild(optDiv);
-form.appendChild(div);
-
-});
-
-function submitQuiz(){
-
-let score=0;
-
-questions.forEach((q,i)=>{
-
-let selected=[...document.querySelectorAll("input[name='q"+i+"']:checked")].map(e=>parseInt(e.value));
-
-let correct=q.correct;
-
-let questionDiv=document.getElementsByClassName("question")[i];
-
-let correctSet=new Set(correct);
-let selectedSet=new Set(selected);
-
-let isCorrect=true;
-
-if(correct.length!==selected.length) isCorrect=false;
-
-correct.forEach(v=>{if(!selectedSet.has(v)) isCorrect=false;});
-
-if(isCorrect){
-questionDiv.classList.add("correct");
-score++;
-}
-else{
-questionDiv.classList.add("wrong");
-}
-
-});
-
-document.getElementById("result").innerText="Score: "+score+" / "+questions.length;
-
-}
-
-</script>
+    <div class="container">
+
+        <h1>Advanced WMT Midterm MSQ Quiz</h1>
+        <p>Select ALL correct answers.</p>
+
+        <form id="quizForm"></form>
+
+        <button onclick="submitQuiz()" type="button">Submit Answers</button>
+
+        <div id="result" class="result"></div>
+
+    </div>
+
+    <script>
+
+        const questions = [
+
+            {
+                q: "1. Full Web Request Hierarchy — Which events occur before rendering?",
+                options: [
+                    "Browser resolves domain using DNS",
+                    "Browser establishes TCP connection",
+                    "Browser sends HTTP request",
+                    "Server processes request",
+                    "Browser constructs DOM tree"
+                ],
+                correct: [0, 1, 2, 3, 4]
+            },
+
+            {
+                q: "2. DNS Resolution Hierarchy — Which may participate?",
+                options: [
+                    "Browser cache",
+                    "Local DNS resolver",
+                    "Root DNS server",
+                    "TLD server (.com)",
+                    "Authoritative DNS server"
+                ],
+                correct: [0, 1, 2, 3, 4]
+            },
+
+            {
+                q: "3. DOM Tree Hierarchy relationships",
+                options: [
+                    "<body> parent of <div>",
+                    "<div> parent of <section>",
+                    "<section> parent of <p>",
+                    "<h1> sibling of <section>",
+                    "<p> sibling of <div>"
+                ],
+                correct: [0, 1, 2, 3]
+            },
+
+            {
+                q: "4. CSS Specificity",
+                options: [
+                    "Both rules target <p>",
+                    "Blue overrides red",
+                    "ID selector higher specificity",
+                    "Text becomes red",
+                    "Text becomes blue"
+                ],
+                correct: [0, 1, 2, 4]
+            },
+
+            {
+                q: "5. HTML Nested List",
+                options: [
+                    "Outer ul has two li children",
+                    "Inner ul nested inside second li",
+                    "Team and Contact grandchildren of outer ul",
+                    "div ancestor of all elements",
+                    "About contains nested list"
+                ],
+                correct: [0, 1, 3, 4]
+            },
+
+            {
+                q: "6. Browser Rendering Pipeline",
+                options: [
+                    "Parse HTML",
+                    "Build DOM tree",
+                    "Load CSS",
+                    "Build Render Tree",
+                    "Paint layout"
+                ],
+                correct: [0, 1, 2, 3, 4]
+            },
+
+            {
+                q: "7. JavaScript Capabilities",
+                options: [
+                    "Form validation",
+                    "DOM manipulation",
+                    "Update page dynamically",
+                    "Direct server database queries",
+                    "Client calculations"
+                ],
+                correct: [0, 1, 2, 4]
+            },
+
+            {
+                q: "8. Navigation DOM hierarchy",
+                options: [
+                    "ul parent of li",
+                    "li elements siblings",
+                    "a children of li",
+                    "a elements siblings",
+                    "ul ancestor of a"
+                ],
+                correct: [0, 1, 2, 3, 4]
+            },
+
+            {
+                q: "9. HTML layout hierarchy",
+                options: [
+                    "Header section footer siblings",
+                    "p inside section descendant of body",
+                    "h1 child of header",
+                    "footer parent of p",
+                    "section ancestor of h1"
+                ],
+                correct: [0, 1, 2, 3]
+            },
+
+            {
+                q: "10. URL Components",
+                options: [
+                    "Protocol https",
+                    "Subdomain api",
+                    "Domain example.com",
+                    "Port 443",
+                    "Query id=25"
+                ],
+                correct: [0, 1, 2, 3, 4]
+            },
+
+            {
+                q: "11. HTML container hierarchy",
+                options: [
+                    "container root of snippet",
+                    "content child of container",
+                    "Paragraphs siblings",
+                    "h1 sibling of content",
+                    "h1 parent of paragraphs"
+                ],
+                correct: [0, 1, 2, 3]
+            },
+
+            {
+                q: "12. Table structure",
+                options: [
+                    "Table has 3 rows",
+                    "th header cells",
+                    "td data cells",
+                    "Each tr has two cells",
+                    "table parent of td"
+                ],
+                correct: [0, 1, 2, 3, 4]
+            },
+
+            {
+                q: "13. CSS row styling",
+                options: [
+                    "CSS class applied to row",
+                    "row1 applies to tr",
+                    "row1 affects cells visually",
+                    "row1 changes width",
+                    "row1 sets background"
+                ],
+                correct: [0, 1, 2, 4]
+            },
+
+            {
+                q: "14. Inline CSS",
+                options: [
+                    "Inline CSS on h1",
+                    "Text centered",
+                    "Text color blue",
+                    "Inline overrides external normally",
+                    "Style applies entire document"
+                ],
+                correct: [0, 1, 2, 3]
+            },
+
+            {
+                q: "15. Navigation CSS",
+                options: [
+                    "Targets li inside nav",
+                    "Items horizontal",
+                    "Margin between items",
+                    "ul becomes horizontal",
+                    "li remains block"
+                ],
+                correct: [0, 1, 2]
+            },
+
+            {
+                q: "16. CSS selector hierarchy",
+                options: [
+                    "p inside #main",
+                    "p outside main",
+                    "p descendants of main",
+                    "div id main",
+                    "nested p inside children"
+                ],
+                correct: [0, 2, 4]
+            },
+
+            {
+                q: "17. HTML grouping",
+                options: [
+                    "div groups elements",
+                    "img sibling of a",
+                    "img parent of a",
+                    "div ancestor of a",
+                    "img descendant of div"
+                ],
+                correct: [0, 1, 3, 4]
+            },
+
+            {
+                q: "18. Embedded CSS",
+                options: [
+                    "CSS embedded in HTML",
+                    "Styles apply to p",
+                    "Inside style tag",
+                    "Affects page",
+                    "External CSS required"
+                ],
+                correct: [0, 1, 2, 3]
+            },
+
+            {
+                q: "19. CSS class reuse",
+                options: [
+                    "Class can style multiple elements",
+                    "Class uses dot syntax",
+                    "Class reused in HTML",
+                    "Class names must be unique",
+                    "Improves reuse"
+                ],
+                correct: [0, 1, 2, 4]
+            },
+
+            {
+                q: "20. External CSS linking",
+                options: [
+                    "<link rel='stylesheet' href='style.css'>",
+                    "<script src='style.css'>",
+                    "<link href='style.css'>",
+                    "<style src='style.css'>",
+                    "<link rel='css'>"
+                ],
+                correct: [0]
+            },
+
+            {
+                q: "21. JavaScript variable scope",
+                options: [
+                    "var function scoped",
+                    "let block scoped",
+                    "const cannot be reassigned",
+                    "const must be initialized",
+                    "var cannot be redeclared"
+                ],
+                correct: [0, 1, 2, 3]
+            },
+
+            {
+                q: "22. If condition",
+                options: [
+                    "Condition true",
+                    "A printed",
+                    "B printed",
+                    "if block executed",
+                    "else skipped"
+                ],
+                correct: [0, 1, 3, 4]
+            },
+
+            {
+                q: "23. Chained conditions",
+                options: [
+                    "age < 12 false",
+                    "Second condition true",
+                    "Result becomes 10$",
+                    "Last block executed",
+                    "Uses chained conditions"
+                ],
+                correct: [0, 1, 2, 4]
+            },
+
+            {
+                q: "24. Switch execution",
+                options: [
+                    "case 2 executed",
+                    "msg Tue",
+                    "break prevents fallthrough",
+                    "default skipped",
+                    "case 1 executed"
+                ],
+                correct: [0, 1, 2, 3]
+            },
+
+            {
+                q: "25. For loop",
+                options: [
+                    "Loop runs 3 times",
+                    "Outputs 0 1 2",
+                    "i block scoped",
+                    "Condition checked each iteration",
+                    "Increment after body"
+                ],
+                correct: [0, 1, 2, 3, 4]
+            },
+
+            {
+                q: "26. While loop",
+                options: [
+                    "Runs 3 times",
+                    "Prints 0 1 2",
+                    "Condition evaluated before",
+                    "Infinite loop",
+                    "Increment inside"
+                ],
+                correct: [0, 1, 2, 4]
+            },
+
+            {
+                q: "27. Do while",
+                options: [
+                    "Runs once",
+                    "Prints 5",
+                    "Condition checked after",
+                    "Loop skipped",
+                    "Guarantees one run"
+                ],
+                correct: [0, 1, 2, 4]
+            },
+
+            {
+                q: "28. Logical AND",
+                options: [
+                    "Both conditions true",
+                    "Logical AND used",
+                    "Output valid",
+                    "Condition false",
+                    "Both expressions evaluated"
+                ],
+                correct: [0, 1, 2, 4]
+            },
+
+            {
+                q: "29. Array basics",
+                options: [
+                    "Array has 3 elements",
+                    "Index starts 0",
+                    "arr[0] A",
+                    "arr[2] C",
+                    "arr[3] exists"
+                ],
+                correct: [0, 1, 2, 3]
+            },
+
+            {
+                q: "30. Array length",
+                options: [
+                    "Output 3",
+                    "length property",
+                    "Counts elements",
+                    "Length equals last index",
+                    "Length dynamic"
+                ],
+                correct: [0, 1, 2, 4]
+            },
+
+            {
+                q: "31. Function definition",
+                options: [
+                    "Function defined",
+                    "Parameters a b",
+                    "Returns sum",
+                    "Called automatically",
+                    "Return exits function"
+                ],
+                correct: [0, 1, 2, 4]
+            },
+
+            {
+                q: "32. Function call",
+                options: [
+                    "Function executed",
+                    "Result 5",
+                    "Parameters receive arguments",
+                    "Return stored in result",
+                    "Function called once"
+                ],
+                correct: [0, 1, 2, 3, 4]
+            },
+
+            {
+                q: "33. DOM interaction",
+                options: [
+                    "Select element by id",
+                    "Change HTML content",
+                    "Modify DOM",
+                    "Requires element id message",
+                    "Updates page dynamically"
+                ],
+                correct: [0, 1, 2, 3, 4]
+            },
+
+            {
+                q: "34. Event handling",
+                options: [
+                    "Click event assigned",
+                    "Function executes on click",
+                    "Alert shown",
+                    "Triggered automatically",
+                    "Anonymous function"
+                ],
+                correct: [0, 1, 2, 4]
+            },
+
+            {
+                q: "35. Primitive types",
+                options: [
+                    "String",
+                    "Number",
+                    "Boolean",
+                    "Object",
+                    "Undefined"
+                ],
+                correct: [0, 1, 2, 4]
+            },
+
+            {
+                q: "36. Comparison operators",
+                options: [
+                    "==",
+                    "===",
+                    "!=",
+                    ">=",
+                    "++"
+                ],
+                correct: [0, 1, 2, 3]
+            },
+
+            {
+                q: "37. Loose equality",
+                options: [
+                    "Result true",
+                    "Type conversion occurs",
+                    "Loose equality",
+                    "Strict equality",
+                    "Both same type"
+                ],
+                correct: [0, 1, 2]
+            },
+
+            {
+                q: "38. Strict equality",
+                options: [
+                    "Result false",
+                    "Type conversion occurs",
+                    "Strict equality",
+                    "Values equal but types differ",
+                    "Comparison fails"
+                ],
+                correct: [0, 2, 3, 4]
+            },
+
+            {
+                q: "39. JavaScript output methods",
+                options: [
+                    "alert()",
+                    "document.write()",
+                    "console.log()",
+                    "innerHTML",
+                    "print()"
+                ],
+                correct: [0, 1, 2, 3]
+            },
+
+            {
+                q: "40. DOM update flow",
+                options: [
+                    "Event triggered",
+                    "JS executed",
+                    "DOM modified",
+                    "Browser re-renders",
+                    "Server request required"
+                ],
+                correct: [0, 1, 2, 3]
+            }
+
+        ];
+
+        const form = document.getElementById("quizForm");
+
+        questions.forEach((q, i) => {
+
+            let div = document.createElement("div");
+            div.className = "question";
+
+            let title = document.createElement("h3");
+            title.innerText = q.q;
+            div.appendChild(title);
+
+            let optDiv = document.createElement("div");
+            optDiv.className = "options";
+
+            q.options.forEach((opt, j) => {
+
+                let label = document.createElement("label");
+                let checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.name = "q" + i;
+                checkbox.value = j;
+
+                label.appendChild(checkbox);
+                label.append(" " + opt);
+
+                optDiv.appendChild(label);
+
+            });
+
+            div.appendChild(optDiv);
+            form.appendChild(div);
+
+        });
+
+        function submitQuiz() {
+
+            let score = 0;
+
+            questions.forEach((q, i) => {
+
+                let selected = [...document.querySelectorAll("input[name='q" + i + "']:checked")].map(e => parseInt(e.value));
+
+                let correct = q.correct;
+
+                let questionDiv = document.getElementsByClassName("question")[i];
+
+                let correctSet = new Set(correct);
+                let selectedSet = new Set(selected);
+
+                let isCorrect = true;
+
+                if (correct.length !== selected.length) isCorrect = false;
+
+                correct.forEach(v => { if (!selectedSet.has(v)) isCorrect = false; });
+
+                if (isCorrect) {
+                    questionDiv.classList.add("correct");
+                    score++;
+                }
+                else {
+                    questionDiv.classList.add("wrong");
+                }
+
+            });
+
+            document.getElementById("result").innerText = "Score: " + score + " / " + questions.length;
+
+        }
+
+    </script>
 
 </body>
+
 </html>

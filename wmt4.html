@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WMT Hard Exam Quiz - DOM, JavaScript, Forms</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      line-height: 1.55;
+    }
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .panel {
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 14px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+    }
+    .header {
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      margin: 0 0 10px;
+      font-size: 30px;
+      color: #f8fafc;
+    }
+    .muted { color: #94a3b8; }
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .legend .item {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .section-title {
+      margin: 28px 0 16px;
+      font-size: 22px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+    .question-card {
+      padding: 18px;
+      margin-bottom: 16px;
+      border-radius: 14px;
+      background: #111827;
+      border: 1px solid #334155;
+    }
+    .question-head {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #1d4ed8;
+      color: #dbeafe;
+    }
+    .badge.single { background: #1d4ed8; color: #dbeafe; }
+    .badge.multi { background: #7c3aed; color: #ede9fe; }
+    .badge.code { background: #047857; color: #d1fae5; }
+    .question-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+    .question-text {
+      margin: 8px 0 12px;
+      color: #cbd5e1;
+    }
+    .meta-line {
+      font-size: 13px;
+      color: #93c5fd;
+      margin-bottom: 10px;
+    }
+    pre {
+      background: #020617;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      border-radius: 10px;
+      padding: 14px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 12px 0;
+    }
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+    .option {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+    .option:hover { background: #243247; }
+    .option.correct-option {
+      border-color: rgba(34, 197, 94, 0.65);
+      background: rgba(34, 197, 94, 0.14);
+    }
+    .option.wrong-picked {
+      border-color: rgba(239, 68, 68, 0.65);
+      background: rgba(239, 68, 68, 0.14);
+    }
+    .option.missed-correct {
+      border-color: rgba(245, 158, 11, 0.65);
+      background: rgba(245, 158, 11, 0.14);
+    }
+    input[type="checkbox"] {
+      margin-top: 3px;
+      transform: scale(1.08);
+    }
+    .feedback {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      border: 1px solid #334155;
+    }
+    .feedback.correct {
+      background: rgba(34, 197, 94, 0.14);
+      border-color: rgba(34, 197, 94, 0.4);
+    }
+    .feedback.wrong {
+      background: rgba(239, 68, 68, 0.14);
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+    .answer-line {
+      margin-top: 8px;
+      color: #fde68a;
+      font-weight: 700;
+    }
+    .results {
+      display: none;
+      margin: 24px 0;
+      padding: 22px;
+    }
+    .score {
+      font-size: 28px;
+      font-weight: 800;
+      color: #86efac;
+      margin-bottom: 14px;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .stat {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .stat strong {
+      display: block;
+      font-size: 20px;
+      color: #f8fafc;
+      margin-top: 6px;
+    }
+    .toolbar {
+      position: sticky;
+      bottom: 0;
+      padding: 16px 0 8px;
+      background: rgba(15, 23, 42, 0.96);
+      backdrop-filter: blur(8px);
+    }
+    .toolbar-inner {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-primary { background: #22c55e; color: #052e16; }
+    .btn-secondary { background: #334155; color: #e2e8f0; }
+    .btn-ghost { background: #0b1220; color: #cbd5e1; border: 1px solid #334155; }
+    @media (max-width: 640px) {
+      .container { padding: 16px; }
+      .header, .question-card, .results { padding: 16px; }
+      .header h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="panel header">
+      <h1>WMT Hard Exam Quiz</h1>
+      <p class="muted">Topics: DOM, JavaScript basics, events, loops, arrays, functions, form validation, and DOM manipulation.</p>
+      <p><strong>Instruction:</strong> Some questions are single-answer MCQ and some are multiple-select MSQ. Select all answers you believe are correct. The checker uses an exact match rule.</p>
+      <div class="legend">
+        <div class="item"><strong>Green</strong><br>Correct option selected</div>
+        <div class="item"><strong>Orange</strong><br>Correct option missed</div>
+        <div class="item"><strong>Red</strong><br>Wrong option selected</div>
+      </div>
+    </div>
+
+    <div id="quizForm"></div>
+    <div id="resultBox" class="panel results"></div>
+
+    <div class="toolbar">
+      <div class="toolbar-inner">
+        <button type="button" class="btn-primary" onclick="submitQuiz()">Submit Answers</button>
+        <button type="button" class="btn-secondary" onclick="resetQuiz()">Reset</button>
+        <button type="button" class="btn-ghost" onclick="showAnswerKey()">Show Full Answer Key</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        id: 'Q1',
+        section: 'SECTION A — HARD SINGLE-ANSWER QUESTIONS',
+        badge: 'single',
+        type: 'Single Answer',
+        text: 'Which DOM method returns one element by its unique identifier?',
+        options: {
+          a: 'getElementsByTagName()',
+          b: 'getElementById()',
+          c: 'getElementsByClassName()',
+          d: 'querySelectorAll()'
+        },
+        correct: ['b']
+      },
+      {
+        id: 'Q2',
+        section: 'SECTION A — HARD SINGLE-ANSWER QUESTIONS',
+        badge: 'single',
+        type: 'Single Answer',
+        text: 'What will be printed?',
+        code: `let x = "5";\nlet y = 5;\n\nconsole.log(x == y);`,
+        options: { a: 'true', b: 'false', c: 'undefined', d: 'error' },
+        correct: ['a']
+      },
+      {
+        id: 'Q3',
+        section: 'SECTION A — HARD SINGLE-ANSWER QUESTIONS',
+        badge: 'single',
+        type: 'Single Answer',
+        text: 'What will be printed?',
+        code: `let count = 0;\n\nfor(let i=1;i<=5;i++){\n  count += i;\n}\n\nconsole.log(count);`,
+        options: { a: '5', b: '10', c: '15', d: '20' },
+        correct: ['c']
+      },
+      {
+        id: 'Q4',
+        section: 'SECTION A — HARD SINGLE-ANSWER QUESTIONS',
+        badge: 'single',
+        type: 'Single Answer',
+        text: 'Which event is triggered when a user presses a key in an input field?',
+        options: { a: 'onclick', b: 'onkeydown', c: 'onmouseover', d: 'onchange' },
+        correct: ['b']
+      },
+      {
+        id: 'Q5',
+        section: 'SECTION A — HARD SINGLE-ANSWER QUESTIONS',
+        badge: 'single',
+        type: 'Single Answer',
+        text: 'Which JavaScript keyword creates a block-scoped variable?',
+        options: { a: 'var', b: 'let', c: 'const', d: 'function' },
+        correct: ['b', 'c']
+      },
+      {
+        id: 'Q6',
+        section: 'SECTION A — HARD SINGLE-ANSWER QUESTIONS',
+        badge: 'single',
+        type: 'Single Answer',
+        text: 'Which statement is correct about arrays?',
+        options: {
+          a: 'Arrays store multiple values in one variable',
+          b: 'Arrays start indexing from 1',
+          c: 'Arrays cannot store strings',
+          d: 'Arrays cannot change size'
+        },
+        correct: ['a']
+      },
+      {
+        id: 'Q7',
+        section: 'SECTION A — HARD SINGLE-ANSWER QUESTIONS',
+        badge: 'single',
+        type: 'Single Answer',
+        text: 'Which JavaScript function displays a Yes/No dialog?',
+        options: { a: 'alert()', b: 'confirm()', c: 'prompt()', d: 'console.log()' },
+        correct: ['b']
+      },
+      {
+        id: 'Q8',
+        section: 'SECTION A — HARD SINGLE-ANSWER QUESTIONS',
+        badge: 'single',
+        type: 'Single Answer',
+        text: 'Which operator checks both value and type equality?',
+        options: { a: '==', b: '===', c: '=', d: '!=' },
+        correct: ['b']
+      },
+      {
+        id: 'Q9',
+        section: 'SECTION A — HARD SINGLE-ANSWER QUESTIONS',
+        badge: 'single',
+        type: 'Single Answer',
+        text: 'What will be printed?',
+        code: `let a = 10;\nlet b = 3;\n\nconsole.log(a % b);`,
+        options: { a: '0', b: '1', c: '3', d: '7' },
+        correct: ['b']
+      },
+      {
+        id: 'Q10',
+        section: 'SECTION A — HARD SINGLE-ANSWER QUESTIONS',
+        badge: 'single',
+        type: 'Single Answer',
+        text: 'Which method returns an HTMLCollection that updates automatically?',
+        options: { a: 'getElementById()', b: 'getElementsByTagName()', c: 'querySelector()', d: 'getElementByName()' },
+        correct: ['b']
+      },
+      {
+        id: 'Q11',
+        section: 'SECTION A — HARD SINGLE-ANSWER QUESTIONS',
+        badge: 'single',
+        type: 'Single Answer',
+        text: 'Which JavaScript structure repeats code until condition becomes false?',
+        options: { a: 'if', b: 'switch', c: 'loop', d: 'function' },
+        correct: ['c']
+      },
+      {
+        id: 'Q12',
+        section: 'SECTION A — HARD SINGLE-ANSWER QUESTIONS',
+        badge: 'single',
+        type: 'Single Answer',
+        text: 'Which statement correctly adds an element to an array?',
+        code: `let arr = ["A","B"];`,
+        options: { a: 'arr.insert("C")', b: 'arr.push("C")', c: 'arr.add("C")', d: 'arr.append("C")' },
+        correct: ['b']
+      },
+      {
+        id: 'Q13',
+        section: 'SECTION A — HARD SINGLE-ANSWER QUESTIONS',
+        badge: 'single',
+        type: 'Single Answer',
+        text: 'Which event runs when a form value changes?',
+        options: { a: 'onchange', b: 'onclick', c: 'onmouseover', d: 'onkeydown' },
+        correct: ['a']
+      },
+      {
+        id: 'Q14',
+        section: 'SECTION A — HARD SINGLE-ANSWER QUESTIONS',
+        badge: 'single',
+        type: 'Single Answer',
+        text: 'Which object represents the entire HTML document?',
+        options: { a: 'window', b: 'document', c: 'DOM', d: 'element' },
+        correct: ['b']
+      },
+      {
+        id: 'Q15',
+        section: 'SECTION A — HARD SINGLE-ANSWER QUESTIONS',
+        badge: 'single',
+        type: 'Single Answer',
+        text: 'Which JavaScript keyword stops execution inside a switch case?',
+        options: { a: 'stop', b: 'return', c: 'break', d: 'exit' },
+        correct: ['c']
+      },
+
+      {
+        id: 'Q16',
+        section: 'SECTION B — MULTIPLE-CORRECT HARD QUESTIONS',
+        badge: 'multi',
+        type: 'Multiple Correct',
+        text: 'Consider the following DOM hierarchy.',
+        code: `<div id="main">\n<h1>Title</h1>\n<p>Hello</p>\n</div>`,
+        options: {
+          a: 'div is parent of h1',
+          b: 'h1 sibling of p',
+          c: 'p child of div',
+          d: 'div child of p',
+          e: 'h1 ancestor of div'
+        },
+        correct: ['a', 'b', 'c']
+      },
+      {
+        id: 'Q17',
+        section: 'SECTION B — MULTIPLE-CORRECT HARD QUESTIONS',
+        badge: 'multi',
+        type: 'Multiple Correct',
+        text: 'Which JavaScript methods find HTML elements?',
+        options: {
+          a: 'getElementById()',
+          b: 'getElementsByClassName()',
+          c: 'getElementsByTagName()',
+          d: 'findElement()',
+          e: 'querySelector()'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'Q18',
+        section: 'SECTION B — MULTIPLE-CORRECT HARD QUESTIONS',
+        badge: 'multi',
+        type: 'Multiple Correct',
+        text: 'Which are primitive data types?',
+        options: { a: 'String', b: 'Number', c: 'Boolean', d: 'Object', e: 'Undefined' },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'Q19',
+        section: 'SECTION B — MULTIPLE-CORRECT HARD QUESTIONS',
+        badge: 'multi',
+        type: 'Multiple Correct',
+        text: 'Which are logical operators?',
+        options: { a: '&&', b: '||', c: '!', d: '++', e: '--' },
+        correct: ['a', 'b', 'c']
+      },
+      {
+        id: 'Q20',
+        section: 'SECTION B — MULTIPLE-CORRECT HARD QUESTIONS',
+        badge: 'multi',
+        type: 'Multiple Correct',
+        text: 'Which JavaScript actions modify HTML page content?',
+        options: {
+          a: 'innerHTML',
+          b: 'textContent',
+          c: 'style.color',
+          d: 'console.log()',
+          e: 'alert()'
+        },
+        correct: ['a', 'b', 'c']
+      },
+      {
+        id: 'Q21',
+        section: 'SECTION B — MULTIPLE-CORRECT HARD QUESTIONS',
+        badge: 'multi',
+        type: 'Multiple Correct',
+        text: 'Which are common DOM events?',
+        options: { a: 'onclick', b: 'onkeydown', c: 'onchange', d: 'onload', e: 'onhover' },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        id: 'Q22',
+        section: 'SECTION B — MULTIPLE-CORRECT HARD QUESTIONS',
+        badge: 'multi',
+        type: 'Multiple Correct',
+        text: 'Which statements about arrays are correct?',
+        options: {
+          a: 'arrays can store objects',
+          b: 'arrays can store numbers',
+          c: 'arrays have length property',
+          d: 'arrays cannot change size',
+          e: 'arrays can store mixed types'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'Q23',
+        section: 'SECTION B — MULTIPLE-CORRECT HARD QUESTIONS',
+        badge: 'multi',
+        type: 'Multiple Correct',
+        text: 'Which are correct about JavaScript functions?',
+        options: {
+          a: 'reusable blocks',
+          b: 'can return values',
+          c: 'can accept parameters',
+          d: 'automatically execute when declared',
+          e: 'can call other functions'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'Q24',
+        section: 'SECTION B — MULTIPLE-CORRECT HARD QUESTIONS',
+        badge: 'multi',
+        type: 'Multiple Correct',
+        text: 'Which JavaScript properties change style?',
+        options: {
+          a: 'style.color',
+          b: 'style.backgroundColor',
+          c: 'style.fontSize',
+          d: 'style.display',
+          e: 'style.console'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        id: 'Q25',
+        section: 'SECTION B — MULTIPLE-CORRECT HARD QUESTIONS',
+        badge: 'multi',
+        type: 'Multiple Correct',
+        text: 'Which statements about loops are correct?',
+        options: {
+          a: 'for loop checks condition each iteration',
+          b: 'while loop checks condition first',
+          c: 'do-while executes at least once',
+          d: 'infinite loop possible',
+          e: 'loops cannot contain conditions'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+
+      {
+        id: 'Q26',
+        section: 'SECTION C — HARD CODE ANALYSIS QUESTIONS',
+        badge: 'code',
+        type: 'Code Analysis',
+        text: 'What is the output?',
+        code: `let total = 0;\n\nfor(let i=1;i<=4;i++){\n  total += i*i;\n}\n\nconsole.log(total);`,
+        options: { a: '10', b: '20', c: '30', d: '50' },
+        correct: ['c']
+      },
+      {
+        id: 'Q27',
+        section: 'SECTION C — HARD CODE ANALYSIS QUESTIONS',
+        badge: 'code',
+        type: 'Code Analysis',
+        text: 'What is the output?',
+        code: `let arr = [5,10,15,20];\n\nlet sum = 0;\n\nfor(let i=0;i<arr.length;i++){\n  sum += arr[i];\n}\n\nconsole.log(sum);`,
+        options: { a: '20', b: '30', c: '50', d: '60' },
+        correct: ['c']
+      },
+      {
+        id: 'Q28',
+        section: 'SECTION C — HARD CODE ANALYSIS QUESTIONS',
+        badge: 'code',
+        type: 'Code Analysis',
+        text: 'What will be printed?',
+        code: `let students = [\n  {name:"A", age:20},\n  {name:"B", age:22},\n  {name:"C", age:19}\n];\n\nconsole.log(students[1].name);`,
+        options: { a: 'A', b: 'B', c: 'C', d: 'undefined' },
+        correct: ['b']
+      },
+      {
+        id: 'Q29',
+        section: 'SECTION C — HARD CODE ANALYSIS QUESTIONS',
+        badge: 'code',
+        type: 'Code Analysis',
+        text: 'What will be printed?',
+        code: `function square(x){\n  return x*x;\n}\n\nconsole.log(square(4));`,
+        options: { a: '4', b: '8', c: '16', d: 'error' },
+        correct: ['c']
+      },
+      {
+        id: 'Q30',
+        section: 'SECTION C — HARD CODE ANALYSIS QUESTIONS',
+        badge: 'code',
+        type: 'Code Analysis',
+        text: 'What will be printed?',
+        code: `let x = 10;\n\nfunction test(){\n  let x = 5;\n  console.log(x);\n}\n\ntest();`,
+        options: { a: '10', b: '5', c: 'undefined', d: 'error' },
+        correct: ['b']
+      },
+      {
+        id: 'Q31',
+        section: 'SECTION C — HARD CODE ANALYSIS QUESTIONS',
+        badge: 'code',
+        type: 'Code Analysis',
+        text: 'How many times does the loop run?',
+        code: `let i=0;\n\nwhile(i<3){\n  console.log(i);\n  i++;\n}`,
+        options: { a: '2', b: '3', c: '4', d: 'infinite' },
+        correct: ['b']
+      },
+      {
+        id: 'Q32',
+        section: 'SECTION C — HARD CODE ANALYSIS QUESTIONS',
+        badge: 'code',
+        type: 'Code Analysis',
+        text: 'Output?',
+        code: `let x = 5;\n\nif(x>10){\n  console.log("A");\n}\nelse if(x>3){\n  console.log("B");\n}\nelse{\n  console.log("C");\n}`,
+        options: { a: 'A', b: 'B', c: 'C', d: 'error' },
+        correct: ['b']
+      },
+      {
+        id: 'Q33',
+        section: 'SECTION C — HARD CODE ANALYSIS QUESTIONS',
+        badge: 'code',
+        type: 'Code Analysis',
+        text: 'What will be printed?',
+        code: `let fruits=["apple","banana"];\n\nfruits.push("orange");\n\nconsole.log(fruits.length);`,
+        options: { a: '2', b: '3', c: '4', d: 'error' },
+        correct: ['b']
+      },
+      {
+        id: 'Q34',
+        section: 'SECTION C — HARD CODE ANALYSIS QUESTIONS',
+        badge: 'code',
+        type: 'Code Analysis',
+        text: 'Output?',
+        code: `let x = 5;\n\nswitch(x){\n  case 1: console.log("A"); break;\n  case 5: console.log("B"); break;\n  default: console.log("C");\n}`,
+        options: { a: 'A', b: 'B', c: 'C', d: 'error' },
+        correct: ['b']
+      },
+      {
+        id: 'Q35',
+        section: 'SECTION C — HARD CODE ANALYSIS QUESTIONS',
+        badge: 'code',
+        type: 'Code Analysis',
+        text: 'What will be printed?',
+        code: `console.log(typeof "Hello");`,
+        options: { a: 'number', b: 'string', c: 'object', d: 'boolean' },
+        correct: ['b']
+      },
+      {
+        id: 'Q36',
+        section: 'SECTION C — HARD CODE ANALYSIS QUESTIONS',
+        badge: 'code',
+        type: 'Code Analysis',
+        text: 'What will be printed?',
+        code: `let a = 10;\nlet b = "10";\n\nconsole.log(a === b);`,
+        options: { a: 'true', b: 'false', c: 'undefined', d: 'error' },
+        correct: ['b']
+      },
+      {
+        id: 'Q37',
+        section: 'SECTION C — HARD CODE ANALYSIS QUESTIONS',
+        badge: 'code',
+        type: 'Code Analysis',
+        text: 'Output?',
+        code: `function greet(name){\n  return "Hello "+name;\n}\n\nconsole.log(greet("Sam"));`,
+        options: { a: 'Hello Sam', b: 'Sam Hello', c: 'Hello', d: 'undefined' },
+        correct: ['a']
+      },
+      {
+        id: 'Q38',
+        section: 'SECTION C — HARD CODE ANALYSIS QUESTIONS',
+        badge: 'code',
+        type: 'Multiple Correct',
+        text: 'Consider the DOM code.',
+        code: `document.getElementById("message").innerHTML="Welcome";`,
+        options: {
+          a: 'selects element with id message',
+          b: 'changes HTML content',
+          c: 'modifies DOM tree',
+          d: 'requires element in HTML',
+          e: 'updates page dynamically'
+        },
+        correct: ['a', 'b', 'c', 'd', 'e']
+      },
+      {
+        id: 'Q39',
+        section: 'SECTION C — HARD CODE ANALYSIS QUESTIONS',
+        badge: 'code',
+        type: 'Multiple Correct',
+        text: 'Based on the calculator code, which are correct?',
+        code: `function add() {\n  let a = Number(document.getElementById("num1").value);\n  let b = Number(document.getElementById("num2").value);\n  document.getElementById("result").textContent = a + b;\n}`,
+        options: {
+          a: 'input values converted to numbers',
+          b: 'DOM element accessed using id',
+          c: 'result displayed in HTML',
+          d: 'function performs addition',
+          e: 'parseInt required for correctness'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        id: 'Q40',
+        section: 'SECTION C — HARD CODE ANALYSIS QUESTIONS',
+        badge: 'code',
+        type: 'Multiple Correct',
+        text: 'Consider the validation logic.',
+        code: `switch(true){\n  case name === "" || email === "":\n    alert("Validation failed");\n    break;\n  default:\n    alert("Validation successful");\n}`,
+        options: {
+          a: 'switch(true) used for condition matching',
+          b: 'checks empty fields',
+          c: 'default executed when validation passes',
+          d: 'alert displays message',
+          e: 'break exits switch block'
+        },
+        correct: ['a', 'b', 'c', 'd', 'e']
+      }
+    ];
+
+    const badgeClassMap = {
+      single: 'single',
+      multi: 'multi',
+      code: 'code'
+    };
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function renderQuiz() {
+      const container = document.getElementById('quizForm');
+      let currentSection = '';
+      let html = '';
+
+      questions.forEach((q, index) => {
+        if (q.section !== currentSection) {
+          currentSection = q.section;
+          html += `<div class="section-title">${escapeHtml(currentSection)}</div>`;
+        }
+
+        const optionsHtml = Object.entries(q.options).map(([key, value]) => `
+          <label class="option" data-question="${q.id}" data-option="${key}">
+            <input type="checkbox" name="${q.id}" value="${key}">
+            <span><strong>${key}.</strong> ${escapeHtml(value)}</span>
+          </label>
+        `).join('');
+
+        html += `
+          <div class="question-card" id="card-${q.id}">
+            <div class="question-head">
+              <span class="badge ${badgeClassMap[q.badge] || ''}">${q.id}</span>
+              <div class="question-title">Question ${index + 1}</div>
+            </div>
+            <div class="meta-line">${escapeHtml(q.type)}</div>
+            <div class="question-text">${escapeHtml(q.text)}</div>
+            ${q.code ? `<pre>${escapeHtml(q.code)}</pre>` : ''}
+            <div class="options">${optionsHtml}</div>
+            <div class="feedback" id="feedback-${q.id}"></div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function normalize(arr) {
+      return [...arr].sort();
+    }
+
+    function exactMatch(selected, correct) {
+      const a = normalize(selected);
+      const b = normalize(correct);
+      return a.length === b.length && a.every((v, i) => v === b[i]);
+    }
+
+    function clearOptionHighlights() {
+      document.querySelectorAll('.option').forEach(label => {
+        label.classList.remove('correct-option', 'wrong-picked', 'missed-correct');
+      });
+    }
+
+    function submitQuiz() {
+      clearOptionHighlights();
+      let correctCount = 0;
+      let wrongCount = 0;
+
+      questions.forEach((q) => {
+        const selectedInputs = [...document.querySelectorAll(`input[name="${q.id}"]:checked`)];
+        const selected = selectedInputs.map(input => input.value);
+        const feedback = document.getElementById(`feedback-${q.id}`);
+        const isExact = exactMatch(selected, q.correct);
+
+        Object.keys(q.options).forEach((key) => {
+          const label = document.querySelector(`label[data-question="${q.id}"][data-option="${key}"]`);
+          const isSelected = selected.includes(key);
+          const isCorrect = q.correct.includes(key);
+
+          if (isCorrect && isSelected) {
+            label.classList.add('correct-option');
+          } else if (!isCorrect && isSelected) {
+            label.classList.add('wrong-picked');
+          } else if (isCorrect && !isSelected) {
+            label.classList.add('missed-correct');
+          }
+        });
+
+        feedback.style.display = 'block';
+
+        if (isExact) {
+          correctCount++;
+          feedback.className = 'feedback correct';
+          feedback.innerHTML = `Correct.<div class="answer-line">Answer: ${q.correct.join(', ')}</div>`;
+        } else {
+          wrongCount++;
+          feedback.className = 'feedback wrong';
+          feedback.innerHTML = `Incorrect.<div class="answer-line">Correct answer(s): ${q.correct.join(', ')}</div>`;
+        }
+      });
+
+      const percentage = ((correctCount / questions.length) * 100).toFixed(2);
+      const resultBox = document.getElementById('resultBox');
+      resultBox.style.display = 'block';
+      resultBox.innerHTML = `
+        <div class="score">Score: ${correctCount} / ${questions.length} (${percentage}%)</div>
+        <div class="stats">
+          <div class="stat">Total Questions<strong>${questions.length}</strong></div>
+          <div class="stat">Correct<strong>${correctCount}</strong></div>
+          <div class="stat">Incorrect<strong>${wrongCount}</strong></div>
+          <div class="stat">Accuracy<strong>${percentage}%</strong></div>
+        </div>
+      `;
+      resultBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function resetQuiz() {
+      document.querySelectorAll('input[type="checkbox"]').forEach(input => input.checked = false);
+      clearOptionHighlights();
+      document.querySelectorAll('.feedback').forEach(box => {
+        box.style.display = 'none';
+        box.className = 'feedback';
+        box.innerHTML = '';
+      });
+      const resultBox = document.getElementById('resultBox');
+      resultBox.style.display = 'none';
+      resultBox.innerHTML = '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showAnswerKey() {
+      clearOptionHighlights();
+      questions.forEach((q) => {
+        Object.keys(q.options).forEach((key) => {
+          const label = document.querySelector(`label[data-question="${q.id}"][data-option="${key}"]`);
+          if (q.correct.includes(key)) {
+            label.classList.add('correct-option');
+          }
+        });
+        const feedback = document.getElementById(`feedback-${q.id}`);
+        feedback.style.display = 'block';
+        feedback.className = 'feedback correct';
+        feedback.innerHTML = `<div class="answer-line">Correct answer(s): ${q.correct.join(', ')}</div>`;
+      });
+      const resultBox = document.getElementById('resultBox');
+      resultBox.style.display = 'block';
+      resultBox.innerHTML = `
+        <div class="score">Full Answer Key Displayed</div>
+        <div class="stats">
+          <div class="stat">Questions<strong>${questions.length}</strong></div>
+          <div class="stat">Mode<strong>Answer Key</strong></div>
+        </div>
+      `;
+      resultBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    renderQuiz();
+  </script>
+</body>
+</html>

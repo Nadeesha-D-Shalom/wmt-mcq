@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hard MSQ Quiz - 50 Questions</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .header, .card, .result-box {
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+    .header {
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    .muted { color: #94a3b8; }
+    .question-card {
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+    .question-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #f8fafc;
+    }
+    .question-text {
+      margin-bottom: 14px;
+      color: #cbd5e1;
+    }
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+    label.option {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    label.option:hover {
+      background: #243247;
+    }
+    input[type="checkbox"] {
+      margin-top: 3px;
+      transform: scale(1.1);
+    }
+    .actions {
+      position: sticky;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(8px);
+      padding: 16px 0 8px;
+      margin-top: 10px;
+    }
+    .actions-inner {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: #22c55e;
+      color: #052e16;
+    }
+    .btn-secondary {
+      background: #334155;
+      color: #e2e8f0;
+    }
+    .result-box {
+      padding: 20px;
+      margin: 24px 0;
+      display: none;
+    }
+    .score {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      color: #86efac;
+    }
+    .feedback {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    .correct {
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+    }
+    .wrong {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+    .missed {
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+    .answer-key {
+      margin-top: 8px;
+      color: #fde68a;
+      font-weight: 700;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .summary-item {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .summary-item strong {
+      display: block;
+      font-size: 18px;
+      color: #f8fafc;
+    }
+    @media (max-width: 640px) {
+      .container { padding: 16px; }
+      .question-card { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Hard MSQ Quiz - 50 Questions</h1>
+      <p class="muted">Topics: Web basics, client-server model, HTTP/HTTPS, protocols, networking, DNS, IP addressing, URLs, HTML, XML.</p>
+      <p><strong>Instruction:</strong> Select all correct answers, then click <strong>Submit Answers</strong>.</p>
+    </div>
+
+    <form id="quizForm"></form>
+
+    <div id="resultBox" class="result-box"></div>
+
+    <div class="actions">
+      <div class="actions-inner">
+        <button type="button" class="btn-primary" onclick="submitQuiz()">Submit Answers</button>
+        <button type="button" class="btn-secondary" onclick="resetQuiz()">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        number: 1,
+        text: 'Which statements correctly describe the World Wide Web (WWW)?',
+        options: {
+          a: 'It is a global system of interlinked hypertext documents',
+          b: 'It is the same thing as the Internet infrastructure',
+          c: 'It was invented by Tim Berners-Lee',
+          d: 'It requires browsers for access',
+          e: 'It is a protocol used for transferring files'
+        },
+        correct: ['a', 'c', 'd']
+      },
+      {
+        number: 2,
+        text: 'Consider the difference between Internet and Web. Which statements are correct?',
+        options: {
+          a: 'The Internet is the physical global network of computers',
+          b: 'The Web is a service running on top of the Internet',
+          c: 'FTP and Email are part of the Web',
+          d: 'The Web requires Internet infrastructure to function',
+          e: 'The Internet only supports HTTP communication'
+        },
+        correct: ['a', 'b', 'd']
+      },
+      {
+        number: 3,
+        text: 'Which of the following correctly describe components of the Web architecture?',
+        options: {
+          a: 'Client',
+          b: 'Server',
+          c: 'Communication protocols',
+          d: 'Network interface card',
+          e: 'Browser rendering engine'
+        },
+        correct: ['a', 'b', 'c']
+      },
+      {
+        number: 4,
+        text: 'Regarding Client-Server interaction, identify the correct statements.',
+        options: {
+          a: 'The client initiates the request',
+          b: 'The server always initiates communication',
+          c: 'The server processes requests and sends responses',
+          d: 'HTTP follows a request-response model',
+          e: 'Clients cannot communicate with servers over the Internet'
+        },
+        correct: ['a', 'c', 'd']
+      },
+      {
+        number: 5,
+        text: 'Which of the following actions occur when a user enters a URL in the browser?',
+        options: {
+          a: 'Browser sends HTTP request',
+          b: 'DNS resolution occurs',
+          c: 'Server processes the request',
+          d: 'Server initiates the connection automatically',
+          e: 'Server sends HTML response'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        number: 6,
+        text: 'Which statements correctly describe HTTP protocol characteristics?',
+        options: {
+          a: 'Stateless protocol',
+          b: 'Used for transferring hypertext documents',
+          c: 'Maintains persistent user session automatically',
+          d: 'Uses request-response communication',
+          e: 'Requires encryption by default'
+        },
+        correct: ['a', 'b', 'd']
+      },
+      {
+        number: 7,
+        text: 'Which are correct about HTTPS?',
+        options: {
+          a: 'Uses SSL/TLS encryption',
+          b: 'Prevents eavesdropping',
+          c: 'Uses port 80 by default',
+          d: 'Provides authentication and integrity',
+          e: 'Ensures secure data transfer'
+        },
+        correct: ['a', 'b', 'd', 'e']
+      },
+      {
+        number: 8,
+        text: 'Which statements correctly describe HTTP request structure?',
+        options: {
+          a: 'Contains method',
+          b: 'Contains headers',
+          c: 'Contains body',
+          d: 'Contains status code',
+          e: 'Contains request line'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        number: 9,
+        text: 'Which components are included in HTTP response structure?',
+        options: {
+          a: 'Status line',
+          b: 'Headers',
+          c: 'Body',
+          d: 'Request method',
+          e: 'Response status code'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        number: 10,
+        text: 'Which protocols are used for email communication systems?',
+        options: {
+          a: 'SMTP',
+          b: 'POP3',
+          c: 'IMAP',
+          d: 'FTP',
+          e: 'HTTP'
+        },
+        correct: ['a', 'b', 'c']
+      },
+      {
+        number: 11,
+        text: 'Which statements correctly describe FTP protocol?',
+        options: {
+          a: 'Used for file transfer between systems',
+          b: 'Operates at application layer',
+          c: 'Uses port 21',
+          d: 'Encrypts files by default',
+          e: 'Requires client-server communication'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        number: 12,
+        text: 'Which protocols operate at the Application Layer?',
+        options: {
+          a: 'HTTP',
+          b: 'FTP',
+          c: 'SMTP',
+          d: 'TCP',
+          e: 'UDP'
+        },
+        correct: ['a', 'b', 'c']
+      },
+      {
+        number: 13,
+        text: 'Which statements correctly describe TCP protocol?',
+        options: {
+          a: 'Reliable connection-oriented protocol',
+          b: 'Guarantees packet delivery',
+          c: 'Faster but unreliable communication',
+          d: 'Used in HTTP communication',
+          e: 'Uses handshake mechanism'
+        },
+        correct: ['a', 'b', 'd', 'e']
+      },
+      {
+        number: 14,
+        text: 'Which statements correctly describe UDP protocol?',
+        options: {
+          a: 'Connectionless protocol',
+          b: 'Faster than TCP',
+          c: 'Guarantees packet delivery',
+          d: 'Suitable for streaming',
+          e: 'Used in real-time communication'
+        },
+        correct: ['a', 'b', 'd', 'e']
+      },
+      {
+        number: 15,
+        text: 'Which statements correctly describe Computer Networks?',
+        options: {
+          a: 'Group of interconnected devices',
+          b: 'Used for data sharing',
+          c: 'Enables communication between systems',
+          d: 'Exists only within local areas',
+          e: 'Used for centralized data management'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        number: 16,
+        text: 'Which benefits are associated with computer networks?',
+        options: {
+          a: 'Resource sharing',
+          b: 'Remote access',
+          c: 'Improved collaboration',
+          d: 'Reduced latency always',
+          e: 'Centralized data management'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        number: 17,
+        text: 'Which characteristics correctly describe a LAN (Local Area Network)?',
+        options: {
+          a: 'Covers small geographic area',
+          b: 'High speed communication',
+          c: 'Usually privately owned',
+          d: 'Spans continents',
+          e: 'Low latency communication'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        number: 18,
+        text: 'Which characteristics correctly describe a MAN (Metropolitan Area Network)?',
+        options: {
+          a: 'Covers a city or metropolitan area',
+          b: 'Connects multiple LANs',
+          c: 'Larger than WAN',
+          d: 'Often uses fiber infrastructure',
+          e: 'Medium coverage network'
+        },
+        correct: ['a', 'b', 'd', 'e']
+      },
+      {
+        number: 19,
+        text: 'Which characteristics correctly describe a WAN (Wide Area Network)?',
+        options: {
+          a: 'Connects LANs and MANs',
+          b: 'Covers large geographic area',
+          c: 'Internet is an example of WAN',
+          d: 'Always faster than LAN',
+          e: 'Uses public and private transmission systems'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        number: 20,
+        text: 'Which statements correctly describe network topology?',
+        options: {
+          a: 'Arrangement of nodes and connections',
+          b: 'Affects network performance',
+          c: 'Determines scalability',
+          d: 'Defines logical access rules',
+          e: 'Only describes physical cables'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        number: 21,
+        text: 'Which of the following are physical network topologies?',
+        options: {
+          a: 'Bus',
+          b: 'Star',
+          c: 'Ring',
+          d: 'Mesh',
+          e: 'Hybrid'
+        },
+        correct: ['a', 'b', 'c', 'd', 'e']
+      },
+      {
+        number: 22,
+        text: 'Which statements correctly describe logical topology?',
+        options: {
+          a: 'Defines how data flows in network',
+          b: 'Determines media access rules',
+          c: 'Broadcast topology is an example',
+          d: 'Only refers to cable arrangement',
+          e: 'Token passing topology exists'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        number: 23,
+        text: 'Which statements correctly describe IP addresses?',
+        options: {
+          a: 'Unique identifier of a network host',
+          b: 'Required for communication in TCP/IP',
+          c: 'Remains same when network changes',
+          d: 'Assigned by authorities',
+          e: 'Used to identify network connection'
+        },
+        correct: ['a', 'b', 'd', 'e']
+      },
+      {
+        number: 24,
+        text: 'Which characteristics describe IPv4 addressing?',
+        options: {
+          a: '32-bit address length',
+          b: 'Divided into four octets',
+          c: 'Maximum 4.3 billion addresses',
+          d: 'Written in hexadecimal',
+          e: 'Example: 192.168.1.1'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        number: 25,
+        text: 'Which characteristics describe IPv6 addressing?',
+        options: {
+          a: '128-bit address',
+          b: 'Extremely large address space',
+          c: 'Written in hexadecimal format',
+          d: 'Designed to replace IPv4',
+          e: 'Uses dotted decimal notation'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        number: 26,
+        text: 'Which statements correctly describe network and host parts of IP address?',
+        options: {
+          a: 'Network part identifies network',
+          b: 'Host part identifies device',
+          c: 'Both parts are hierarchical',
+          d: 'Host part determines routing',
+          e: 'Network part determines location'
+        },
+        correct: ['a', 'b', 'e']
+      },
+      {
+        number: 27,
+        text: 'Which statements correctly describe DNS system?',
+        options: {
+          a: 'Translates domain names into IP addresses',
+          b: 'Works like internet phonebook',
+          c: 'Eliminates need for IP addresses',
+          d: 'Resolves domain queries',
+          e: 'Required for accessing websites using domain names'
+        },
+        correct: ['a', 'b', 'd', 'e']
+      },
+      {
+        number: 28,
+        text: 'Which components are involved in DNS resolution process?',
+        options: {
+          a: 'Browser',
+          b: 'DNS server',
+          c: 'ISP',
+          d: 'Web server',
+          e: 'Router'
+        },
+        correct: ['a', 'b', 'c']
+      },
+      {
+        number: 29,
+        text: 'Which statements correctly describe URL structure?',
+        options: {
+          a: 'Protocol',
+          b: 'Domain name',
+          c: 'Port number',
+          d: 'Resource path',
+          e: 'Encryption key'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        number: 30,
+        text: 'Which statements correctly describe websites?',
+        options: {
+          a: 'Collection of related web pages',
+          b: 'Hosted on servers',
+          c: 'Accessible via Internet',
+          d: 'Built using markup languages',
+          e: 'Cannot include multimedia'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        number: 31,
+        text: 'Which statements correctly describe HTML language?',
+        options: {
+          a: 'Markup language',
+          b: 'Used to structure web pages',
+          c: 'Defines webpage layout',
+          d: 'Used for server-side programming',
+          e: 'Supported by browsers'
+        },
+        correct: ['a', 'b', 'e']
+      },
+      {
+        number: 32,
+        text: 'Which statements correctly describe HTML5?',
+        options: {
+          a: 'Latest HTML version',
+          b: 'Improves semantic elements',
+          c: 'Supports multimedia without plugins',
+          d: 'Breaks compatibility with old websites',
+          e: 'Improves device-independent rendering'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        number: 33,
+        text: 'Which are HTML heading tags?',
+        options: {
+          a: '<h1>',
+          b: '<h2>',
+          c: '<h6>',
+          d: '<heading>',
+          e: '<head>'
+        },
+        correct: ['a', 'b', 'c']
+      },
+      {
+        number: 34,
+        text: 'Which statements correctly describe HTML lists?',
+        options: {
+          a: 'Ordered lists use <ol>',
+          b: 'Unordered lists use <ul>',
+          c: 'List items use <li>',
+          d: 'Lists cannot be nested',
+          e: 'Ordered lists display numbered items'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        number: 35,
+        text: 'Which statements correctly describe HTML tables?',
+        options: {
+          a: '<table> defines table',
+          b: '<tr> defines row',
+          c: '<td> defines data cell',
+          d: '<th> defines header cell',
+          e: 'Tables must always use CSS'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        number: 36,
+        text: 'Which attributes can span table cells?',
+        options: {
+          a: 'colspan',
+          b: 'rowspan',
+          c: 'rowspan',
+          d: 'rowmerge',
+          e: 'columnmerge'
+        },
+        correct: ['a', 'b', 'c']
+      },
+      {
+        number: 37,
+        text: 'Which statements correctly describe HTML <div> element?',
+        options: {
+          a: 'Block-level element',
+          b: 'Used for layout grouping',
+          c: 'Creates line break automatically',
+          d: 'Inline element',
+          e: 'Can contain other HTML elements'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        number: 38,
+        text: 'Which statements correctly describe HTML <span> element?',
+        options: {
+          a: 'Inline element',
+          b: 'Used for styling small text segments',
+          c: 'Creates block layout',
+          d: 'Used for CSS targeting',
+          e: 'Displays with line breaks'
+        },
+        correct: ['a', 'b', 'd']
+      },
+      {
+        number: 39,
+        text: 'Which statements correctly describe HTML whitespace handling?',
+        options: {
+          a: 'Browser ignores extra spaces',
+          b: 'Multiple spaces render as single space',
+          c: 'Line breaks affect HTML layout strongly',
+          d: 'HTML formatting depends on CSS',
+          e: 'Browser normalizes whitespace'
+        },
+        correct: ['a', 'b', 'd', 'e']
+      },
+      {
+        number: 40,
+        text: 'Which statements correctly describe HTML document structure?',
+        options: {
+          a: '<html> root element',
+          b: '<head> metadata section',
+          c: '<body> content section',
+          d: '<footer> mandatory element',
+          e: '<title> appears in browser tab'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        number: 41,
+        text: 'Which statements correctly describe web servers?',
+        options: {
+          a: 'Store website files',
+          b: 'Respond to HTTP requests',
+          c: 'Process server-side logic',
+          d: 'Initiate communication with client always',
+          e: 'Example: Apache'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        number: 42,
+        text: 'Which are examples of web servers?',
+        options: {
+          a: 'Apache',
+          b: 'Nginx',
+          c: 'IIS',
+          d: 'Tomcat',
+          e: 'Firefox'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        number: 43,
+        text: 'Which statements correctly describe client software?',
+        options: {
+          a: 'Requests resources from server',
+          b: 'Displays web pages',
+          c: 'Initiates HTTP request',
+          d: 'Stores database content',
+          e: 'Example: Chrome'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        number: 44,
+        text: 'Which statements correctly describe web browser functionality?',
+        options: {
+          a: 'Parses HTML',
+          b: 'Executes JavaScript',
+          c: 'Sends HTTP requests',
+          d: 'Acts as database server',
+          e: 'Renders CSS styling'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        number: 45,
+        text: 'Which statements correctly describe stateless protocols?',
+        options: {
+          a: 'Server does not remember previous requests',
+          b: 'Each request processed independently',
+          c: 'HTTP is stateless',
+          d: 'Session management required separately',
+          e: 'State stored automatically'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        number: 46,
+        text: 'Which statements correctly describe port numbers?',
+        options: {
+          a: 'Identify application service',
+          b: 'Used by TCP/UDP protocols',
+          c: 'HTTP uses port 80',
+          d: 'HTTPS uses port 443',
+          e: 'FTP uses port 21'
+        },
+        correct: ['a', 'b', 'c', 'd', 'e']
+      },
+      {
+        number: 47,
+        text: 'Which statements correctly describe domain name system hierarchy?',
+        options: {
+          a: 'Root domain',
+          b: 'Top level domain',
+          c: 'Second level domain',
+          d: 'Host name',
+          e: 'MAC address'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        number: 48,
+        text: 'Which statements correctly describe web communication process?',
+        options: {
+          a: 'Client sends request',
+          b: 'Server processes request',
+          c: 'Server sends response',
+          d: 'DNS resolves domain',
+          e: 'Client sends response'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        number: 49,
+        text: 'Which statements correctly describe markup languages?',
+        options: {
+          a: 'Used to structure data',
+          b: 'XML used for data transport',
+          c: 'HTML used for web pages',
+          d: 'XML used for styling pages',
+          e: 'Tags define document structure'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        number: 50,
+        text: 'Which statements correctly describe XML language?',
+        options: {
+          a: 'Used for storing data',
+          b: 'Allows custom tags',
+          c: 'Used for data exchange',
+          d: 'Used for webpage styling',
+          e: 'Common in APIs'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      }
+    ];
+
+    const form = document.getElementById('quizForm');
+    const resultBox = document.getElementById('resultBox');
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function renderQuiz() {
+      form.innerHTML = questions.map((q) => {
+        const optionsHtml = Object.entries(q.options).map(([key, value]) => `
+          <label class="option">
+            <input type="checkbox" name="q${q.number}" value="${key}">
+            <span><strong>${key}.</strong> ${escapeHtml(value)}</span>
+          </label>
+        `).join('');
+
+        return `
+          <div class="card question-card" id="question-${q.number}">
+            <div class="question-title">Question ${q.number}</div>
+            <div class="question-text">${escapeHtml(q.text)}</div>
+            <div class="options">${optionsHtml}</div>
+            <div class="feedback" id="feedback-${q.number}" style="display:none;"></div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function arraysEqualAsSets(arr1, arr2) {
+      const a = [...arr1].sort();
+      const b = [...arr2].sort();
+      return a.length === b.length && a.every((value, index) => value === b[index]);
+    }
+
+    function submitQuiz() {
+      let correctCount = 0;
+      let incorrectCount = 0;
+
+      questions.forEach((q) => {
+        const selected = [...document.querySelectorAll(`input[name="q${q.number}"]:checked`)].map((input) => input.value);
+        const isCorrect = arraysEqualAsSets(selected, q.correct);
+        const feedback = document.getElementById(`feedback-${q.number}`);
+
+        feedback.style.display = 'block';
+
+        if (isCorrect) {
+          correctCount++;
+          feedback.className = 'feedback correct';
+          feedback.innerHTML = `Correct. <div class="answer-key">Answer: ${q.correct.join(', ')}</div>`;
+        } else {
+          incorrectCount++;
+          feedback.className = 'feedback wrong';
+          feedback.innerHTML = `Incorrect. <div class="answer-key">Correct answer(s): ${q.correct.join(', ')}</div>`;
+        }
+      });
+
+      const percentage = ((correctCount / questions.length) * 100).toFixed(2);
+      resultBox.style.display = 'block';
+      resultBox.innerHTML = `
+        <div class="score">Score: ${correctCount} / ${questions.length} (${percentage}%)</div>
+        <div class="summary-grid">
+          <div class="summary-item"><span>Total Questions</span><strong>${questions.length}</strong></div>
+          <div class="summary-item"><span>Correct</span><strong>${correctCount}</strong></div>
+          <div class="summary-item"><span>Incorrect</span><strong>${incorrectCount}</strong></div>
+          <div class="summary-item"><span>Result</span><strong>${percentage}%</strong></div>
+        </div>
+      `;
+
+      resultBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function resetQuiz() {
+      document.querySelectorAll('input[type="checkbox"]').forEach((input) => input.checked = false);
+      document.querySelectorAll('.feedback').forEach((box) => {
+        box.style.display = 'none';
+        box.innerHTML = '';
+        box.className = 'feedback';
+      });
+      resultBox.style.display = 'none';
+      resultBox.innerHTML = '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    renderQuiz();
+  </script>
+</body>
+</html>

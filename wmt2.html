@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WMT Hard MSQ Quiz</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      line-height: 1.55;
+    }
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .panel {
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 14px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+    }
+    .header {
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      margin: 0 0 10px;
+      font-size: 30px;
+      color: #f8fafc;
+    }
+    .muted { color: #94a3b8; }
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .legend .item {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .section-title {
+      margin: 28px 0 16px;
+      font-size: 22px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+    .question-card {
+      padding: 18px;
+      margin-bottom: 16px;
+      border-radius: 14px;
+      background: #111827;
+      border: 1px solid #334155;
+    }
+    .question-head {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      background: #1d4ed8;
+      color: #dbeafe;
+    }
+    .badge.section-b { background: #7c3aed; color: #ede9fe; }
+    .badge.hier { background: #047857; color: #d1fae5; }
+    .question-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+    .question-text {
+      margin: 8px 0 12px;
+      color: #cbd5e1;
+    }
+    pre {
+      background: #020617;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      border-radius: 10px;
+      padding: 14px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 12px 0;
+    }
+    .options {
+      display: grid;
+      gap: 10px;
+    }
+    .option {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+    .option:hover { background: #243247; }
+    .option.correct-option {
+      border-color: rgba(34, 197, 94, 0.65);
+      background: rgba(34, 197, 94, 0.14);
+    }
+    .option.wrong-picked {
+      border-color: rgba(239, 68, 68, 0.65);
+      background: rgba(239, 68, 68, 0.14);
+    }
+    .option.missed-correct {
+      border-color: rgba(245, 158, 11, 0.65);
+      background: rgba(245, 158, 11, 0.14);
+    }
+    input[type="checkbox"] {
+      margin-top: 3px;
+      transform: scale(1.1);
+    }
+    .feedback {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      border: 1px solid #334155;
+    }
+    .feedback.correct {
+      background: rgba(34, 197, 94, 0.14);
+      border-color: rgba(34, 197, 94, 0.4);
+    }
+    .feedback.wrong {
+      background: rgba(239, 68, 68, 0.14);
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+    .answer-line {
+      margin-top: 8px;
+      color: #fde68a;
+      font-weight: 700;
+    }
+    .results {
+      display: none;
+      margin: 24px 0;
+      padding: 22px;
+    }
+    .score {
+      font-size: 28px;
+      font-weight: 800;
+      color: #86efac;
+      margin-bottom: 14px;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .stat {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .stat strong {
+      display: block;
+      font-size: 20px;
+      color: #f8fafc;
+      margin-top: 6px;
+    }
+    .toolbar {
+      position: sticky;
+      bottom: 0;
+      padding: 16px 0 8px;
+      background: rgba(15, 23, 42, 0.96);
+      backdrop-filter: blur(8px);
+    }
+    .toolbar-inner {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-primary { background: #22c55e; color: #052e16; }
+    .btn-secondary { background: #334155; color: #e2e8f0; }
+    .btn-ghost { background: #0b1220; color: #cbd5e1; border: 1px solid #334155; }
+    .top-space { margin-top: 8px; }
+    @media (max-width: 640px) {
+      .container { padding: 16px; }
+      .header, .question-card, .results { padding: 16px; }
+      .header h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="panel header">
+      <h1>WMT Hard MSQ Quiz</h1>
+      <p class="muted">This version includes your 40 mid-term MSQ questions plus 15 hierarchical reasoning MSQ questions.</p>
+      <p><strong>Instruction:</strong> Select all correct answers. The checker uses the corrected answer key and highlights correct, missed, and wrong-picked options after submission.</p>
+      <div class="legend">
+        <div class="item"><strong>Green</strong><br>Correct option</div>
+        <div class="item"><strong>Orange</strong><br>Correct option you missed</div>
+        <div class="item"><strong>Red</strong><br>Wrong option you selected</div>
+      </div>
+    </div>
+
+    <div id="quizForm"></div>
+
+    <div id="resultBox" class="panel results"></div>
+
+    <div class="toolbar">
+      <div class="toolbar-inner">
+        <button type="button" class="btn-primary" onclick="submitQuiz()">Submit Answers</button>
+        <button type="button" class="btn-secondary" onclick="resetQuiz()">Reset</button>
+        <button type="button" class="btn-ghost" onclick="showAnswerKey()">Show Full Answer Key</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        id: 'A1',
+        section: 'SECTION A — Conceptual MSQ',
+        badge: 'A',
+        text: 'Which statements correctly describe the Client-Server architecture?',
+        options: {
+          a: 'Client initiates communication',
+          b: 'Server processes requests and sends responses',
+          c: 'Server initiates communication with browser by default',
+          d: 'Communication follows request-response model',
+          e: 'Client cannot exist without server software'
+        },
+        correct: ['a', 'b', 'd']
+      },
+      {
+        id: 'A2',
+        section: 'SECTION A — Conceptual MSQ',
+        badge: 'A',
+        text: 'Which events occur when a user types a URL in the browser?',
+        options: {
+          a: 'DNS lookup occurs',
+          b: 'Browser sends HTTP request',
+          c: 'Server sends HTML response',
+          d: 'Server first requests the browser',
+          e: 'TCP connection may be established'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'A3',
+        section: 'SECTION A — Conceptual MSQ',
+        badge: 'A',
+        text: 'Which protocols operate at the Application Layer?',
+        options: { a: 'HTTP', b: 'FTP', c: 'SMTP', d: 'TCP', e: 'UDP' },
+        correct: ['a', 'b', 'c']
+      },
+      {
+        id: 'A4',
+        section: 'SECTION A — Conceptual MSQ',
+        badge: 'A',
+        text: 'Which characteristics describe HTTP protocol?',
+        options: {
+          a: 'Stateless',
+          b: 'Request-response communication',
+          c: 'Automatically stores user session data',
+          d: 'Uses port 80 by default',
+          e: 'Encrypted communication always'
+        },
+        correct: ['a', 'b', 'd']
+      },
+      {
+        id: 'A5',
+        section: 'SECTION A — Conceptual MSQ',
+        badge: 'A',
+        text: 'Which statements correctly describe HTTPS?',
+        options: {
+          a: 'Uses TLS/SSL encryption',
+          b: 'Prevents packet sniffing',
+          c: 'Uses port 443',
+          d: 'Faster than HTTP always',
+          e: 'Provides authentication'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'A6',
+        section: 'SECTION A — Conceptual MSQ',
+        badge: 'A',
+        text: 'Which components are involved in DNS resolution?',
+        options: {
+          a: 'Browser',
+          b: 'DNS resolver',
+          c: 'Root DNS server',
+          d: 'Web server',
+          e: 'Local ISP DNS server'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'A7',
+        section: 'SECTION A — Conceptual MSQ',
+        badge: 'A',
+        text: 'Which parts exist in a URL structure?',
+        options: {
+          a: 'Protocol',
+          b: 'Domain name',
+          c: 'Port number',
+          d: 'Query parameters',
+          e: 'Encryption key'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        id: 'A8',
+        section: 'SECTION A — Conceptual MSQ',
+        badge: 'A',
+        text: 'Which statements correctly describe IPv4 addresses?',
+        options: {
+          a: '32-bit address length',
+          b: 'Written in dotted decimal format',
+          c: 'Contains network and host parts',
+          d: 'Written using hexadecimal only',
+          e: 'Maximum about 4.3 billion addresses'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'A9',
+        section: 'SECTION A — Conceptual MSQ',
+        badge: 'A',
+        text: 'Which statements correctly describe DNS purpose?',
+        options: {
+          a: 'Convert domain names into IP addresses',
+          b: 'Replace IP addressing completely',
+          c: 'Improve usability for humans',
+          d: 'Provide hierarchical domain resolution',
+          e: 'Store website content'
+        },
+        correct: ['a', 'c', 'd']
+      },
+      {
+        id: 'A10',
+        section: 'SECTION A — Conceptual MSQ',
+        badge: 'A',
+        text: 'Which characteristics belong to LAN networks?',
+        options: {
+          a: 'Covers small geographic area',
+          b: 'High data transfer speed',
+          c: 'Often privately managed',
+          d: 'Global coverage',
+          e: 'Low latency'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'A11',
+        section: 'SECTION A — Conceptual MSQ',
+        badge: 'A',
+        text: 'Which statements correctly describe WAN networks?',
+        options: {
+          a: 'Connect multiple LANs',
+          b: 'Cover very large geographic areas',
+          c: 'Internet is example',
+          d: 'Always faster than LAN',
+          e: 'Uses routers and public infrastructure'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'A12',
+        section: 'SECTION A — Conceptual MSQ',
+        badge: 'A',
+        text: 'Which statements correctly describe web browsers?',
+        options: {
+          a: 'Parse HTML',
+          b: 'Render CSS',
+          c: 'Execute JavaScript',
+          d: 'Store website database',
+          e: 'Send HTTP requests'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'A13',
+        section: 'SECTION A — Conceptual MSQ',
+        badge: 'A',
+        text: 'Which statements correctly describe web servers?',
+        options: {
+          a: 'Store website files',
+          b: 'Respond to HTTP requests',
+          c: 'Execute server-side scripts',
+          d: 'Initiate communication automatically',
+          e: 'Send resources to clients'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'A14',
+        section: 'SECTION A — Conceptual MSQ',
+        badge: 'A',
+        text: 'Which statements correctly describe stateless protocols?',
+        options: {
+          a: 'Each request independent',
+          b: 'Server does not remember previous requests',
+          c: 'HTTP is stateless',
+          d: 'Session tracking requires cookies',
+          e: 'State automatically stored in server memory'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        id: 'A15',
+        section: 'SECTION A — Conceptual MSQ',
+        badge: 'A',
+        text: 'Which are valid HTTP request methods?',
+        options: { a: 'GET', b: 'POST', c: 'PUT', d: 'SEND', e: 'DELETE' },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'A16',
+        section: 'SECTION A — Conceptual MSQ',
+        badge: 'A',
+        text: 'Which statements correctly describe HTML language?',
+        options: {
+          a: 'Markup language',
+          b: 'Used for structuring web pages',
+          c: 'Executed by web servers',
+          d: 'Interpreted by browsers',
+          e: 'Uses tags'
+        },
+        correct: ['a', 'b', 'd', 'e']
+      },
+      {
+        id: 'A17',
+        section: 'SECTION A — Conceptual MSQ',
+        badge: 'A',
+        text: 'Which statements correctly describe HTML5 improvements?',
+        options: {
+          a: 'Semantic elements introduced',
+          b: 'Multimedia without plugins',
+          c: 'Better mobile support',
+          d: 'Removed HTML tags completely',
+          e: 'Improved accessibility'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'A18',
+        section: 'SECTION A — Conceptual MSQ',
+        badge: 'A',
+        text: 'Which statements correctly describe HTML elements?',
+        options: {
+          a: 'Defined using tags',
+          b: 'Can contain nested elements',
+          c: 'Always require closing tag',
+          d: 'Form structure of page',
+          e: 'Interpreted by browsers'
+        },
+        correct: ['a', 'b', 'd', 'e']
+      },
+      {
+        id: 'A19',
+        section: 'SECTION A — Conceptual MSQ',
+        badge: 'A',
+        text: 'Which statements correctly describe HTML comments?',
+        options: {
+          a: 'Written using <!-- -->',
+          b: 'Visible in browser output',
+          c: 'Used for developer documentation',
+          d: 'Ignored by browser rendering',
+          e: 'Used to store JavaScript variables'
+        },
+        correct: ['a', 'c', 'd']
+      },
+      {
+        id: 'A20',
+        section: 'SECTION A — Conceptual MSQ',
+        badge: 'A',
+        text: 'Which statements correctly describe HTML semantic structure?',
+        options: {
+          a: 'Improves readability',
+          b: 'Improves SEO',
+          c: 'Helps accessibility tools',
+          d: 'Replaces CSS',
+          e: 'Provides structural meaning'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'B21',
+        section: 'SECTION B — Hard Coding MSQ',
+        badge: 'B',
+        text: 'Consider the HTML code:',
+        code: `<!DOCTYPE html>\n<html>\n<head>\n<title>Travel Adventures</title>\n</head>\n<body>\n<h1>Travel Adventures</h1>\n</body>\n</html>`,
+        options: {
+          a: '<title> text appears in browser tab',
+          b: '<h1> displays inside webpage',
+          c: '<title> must be inside <head>',
+          d: '<h1> must be inside <head>',
+          e: '<title> visible in page body'
+        },
+        correct: ['a', 'b', 'c']
+      },
+      {
+        id: 'B22',
+        section: 'SECTION B — Hard Coding MSQ',
+        badge: 'B',
+        text: 'Consider:',
+        code: `<img src="./images/travel.jpg" alt="Travel" width="300" height="200">`,
+        options: {
+          a: 'Displays image from folder',
+          b: 'alt used when image fails to load',
+          c: 'Width defined in pixels',
+          d: 'Height attribute optional',
+          e: 'src defines hyperlink destination'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        id: 'B23',
+        section: 'SECTION B — Hard Coding MSQ',
+        badge: 'B',
+        text: 'Consider:',
+        code: `<a href="https://www.srilanka.travel">\nVisit Sri Lanka Tourism\n</a>`,
+        options: {
+          a: 'Creates hyperlink',
+          b: 'href specifies destination URL',
+          c: 'Link opens new tab automatically',
+          d: 'Text inside <a> becomes clickable',
+          e: 'href attribute mandatory'
+        },
+        correct: ['a', 'b', 'd']
+      },
+      {
+        id: 'B24',
+        section: 'SECTION B — Hard Coding MSQ',
+        badge: 'B',
+        text: 'Consider:',
+        code: `<ol>\n<li>Clothes</li>\n<li>Travel Documents</li>\n<li>Gadgets</li>\n</ol>`,
+        options: {
+          a: 'Creates ordered list',
+          b: 'Items automatically numbered',
+          c: '<li> defines list item',
+          d: '<ol> required for ordered list',
+          e: '<ul> required for ordered list'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        id: 'B25',
+        section: 'SECTION B — Hard Coding MSQ',
+        badge: 'B',
+        text: 'Consider nested list:',
+        code: `<li>Gadgets\n<ul>\n<li>Laptop</li>\n<li>Smartphone</li>\n</ul>\n</li>`,
+        options: {
+          a: 'Creates nested list',
+          b: '<ul> defines unordered list',
+          c: '<li> can contain other lists',
+          d: 'Nested lists not allowed in HTML',
+          e: 'Browser renders bullet points'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'B26',
+        section: 'SECTION B — Hard Coding MSQ',
+        badge: 'B',
+        text: 'Consider:',
+        code: `<hr>`,
+        options: {
+          a: 'Creates horizontal line',
+          b: 'Used for thematic separation',
+          c: 'Requires closing tag',
+          d: 'Self-closing element',
+          e: 'Visible structural divider'
+        },
+        correct: ['a', 'b', 'd', 'e']
+      },
+      {
+        id: 'B27',
+        section: 'SECTION B — Hard Coding MSQ',
+        badge: 'B',
+        text: 'Consider table code:',
+        code: `<table border="1">\n<tr>\n<th>Item</th>\n<th>Cost</th>\n</tr>\n</table>`,
+        options: {
+          a: '<table> defines table',
+          b: '<tr> defines row',
+          c: '<th> defines header cell',
+          d: '<td> defines table header',
+          e: 'Table requires rows'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'B28',
+        section: 'SECTION B — Hard Coding MSQ',
+        badge: 'B',
+        text: 'Consider:',
+        code: `<table border="1" cellpadding="8" cellspacing="0">`,
+        options: {
+          a: 'border defines table border',
+          b: 'cellpadding defines inner spacing',
+          c: 'cellspacing defines spacing between cells',
+          d: 'These are HTML attributes',
+          e: 'They must be written in CSS only'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        id: 'B29',
+        section: 'SECTION B — Hard Coding MSQ',
+        badge: 'B',
+        text: 'Consider:',
+        code: `<form>\n<label>Name:</label>\n<input type="text">\n</form>`,
+        options: {
+          a: 'Creates form',
+          b: 'Input field for text',
+          c: '<label> describes input field',
+          d: 'Form sends data automatically',
+          e: 'Input must be inside form'
+        },
+        correct: ['a', 'b', 'c']
+      },
+      {
+        id: 'B30',
+        section: 'SECTION B — Hard Coding MSQ',
+        badge: 'B',
+        text: 'Consider:',
+        code: `<input type="number">`,
+        options: {
+          a: 'Accepts numeric values',
+          b: 'Prevents alphabet characters',
+          c: 'Used for age input',
+          d: 'Accepts decimal numbers',
+          e: 'Automatically validates email'
+        },
+        correct: ['a', 'c', 'd']
+      },
+      {
+        id: 'B31',
+        section: 'SECTION B — Hard Coding MSQ',
+        badge: 'B',
+        text: 'Consider:',
+        code: `<input type="email">`,
+        options: {
+          a: 'Accepts email format',
+          b: 'Browser performs basic validation',
+          c: 'Used for email input field',
+          d: 'Accepts numbers only',
+          e: 'Prevents invalid email format'
+        },
+        correct: ['a', 'b', 'c']
+      },
+      {
+        id: 'B32',
+        section: 'SECTION B — Hard Coding MSQ',
+        badge: 'B',
+        text: 'Consider:',
+        code: `<input type="submit" value="Submit">`,
+        options: {
+          a: 'Creates submit button',
+          b: 'Sends form data',
+          c: 'Value attribute sets button text',
+          d: 'Button must be inside form',
+          e: 'Automatically validates inputs'
+        },
+        correct: ['a', 'b', 'c']
+      },
+      {
+        id: 'B33',
+        section: 'SECTION B — Hard Coding MSQ',
+        badge: 'B',
+        text: 'Consider:',
+        code: `<br>`,
+        options: {
+          a: 'Creates line break',
+          b: 'Inline element',
+          c: 'Requires closing tag',
+          d: 'Used to separate form fields',
+          e: 'Self-closing tag'
+        },
+        correct: ['a', 'b', 'd', 'e']
+      },
+      {
+        id: 'B34',
+        section: 'SECTION B — Hard Coding MSQ',
+        badge: 'B',
+        text: 'Consider:',
+        code: `<div>\n<img src="img.jpg">\n<a href="#">Link</a>\n</div>`,
+        options: {
+          a: '<div> groups elements',
+          b: '<div> is block-level element',
+          c: '<div> improves layout organization',
+          d: '<div> inline element',
+          e: 'Used to group related elements'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'B35',
+        section: 'SECTION B — Hard Coding MSQ',
+        badge: 'B',
+        text: 'Consider:',
+        code: `<footer>\n<p>Student Name: Nadeesha</p>\n</footer>`,
+        options: {
+          a: '<footer> defines page footer',
+          b: 'Usually appears at bottom',
+          c: 'Contains metadata',
+          d: 'Semantic HTML element',
+          e: 'Used for copyright information'
+        },
+        correct: ['a', 'b', 'd', 'e']
+      },
+      {
+        id: 'B36',
+        section: 'SECTION B — Hard Coding MSQ',
+        badge: 'B',
+        text: 'Which statements correctly describe HTML forms?',
+        options: {
+          a: 'Used to collect user data',
+          b: 'Sent to server for processing',
+          c: 'Can contain input elements',
+          d: 'Cannot contain labels',
+          e: 'Use <form> tag'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'B37',
+        section: 'SECTION B — Hard Coding MSQ',
+        badge: 'B',
+        text: 'Which statements correctly describe HTML tables?',
+        options: {
+          a: 'Used to represent tabular data',
+          b: 'Organized in rows and columns',
+          c: '<tr> row',
+          d: '<td> data cell',
+          e: '<th> header cell'
+        },
+        correct: ['a', 'b', 'c', 'd', 'e']
+      },
+      {
+        id: 'B38',
+        section: 'SECTION B — Hard Coding MSQ',
+        badge: 'B',
+        text: 'Which statements correctly describe HTML attributes?',
+        options: {
+          a: 'Provide additional element information',
+          b: 'Written inside opening tag',
+          c: 'Always key-value pairs',
+          d: 'Modify element behavior',
+          e: 'Cannot appear multiple times'
+        },
+        correct: ['a', 'b', 'd']
+      },
+      {
+        id: 'B39',
+        section: 'SECTION B — Hard Coding MSQ',
+        badge: 'B',
+        text: 'Which statements correctly describe HTML document structure?',
+        options: {
+          a: '<!DOCTYPE html> defines HTML5',
+          b: '<html> root element',
+          c: '<head> contains metadata',
+          d: '<body> contains visible content',
+          e: '<title> inside body'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        id: 'B40',
+        section: 'SECTION B — Hard Coding MSQ',
+        badge: 'B',
+        text: 'Consider:',
+        code: `<!-- Image section -->\n<div>\n<img src="travel.jpg">\n</div>`,
+        options: {
+          a: 'HTML comment explains section',
+          b: 'Browser ignores comment',
+          c: '<div> groups elements',
+          d: 'Comment visible in page output',
+          e: 'Useful for documentation'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'H1',
+        section: 'HARD HIERARCHICAL MSQ',
+        badge: 'H',
+        text: 'A user types the following URL in the browser:',
+        code: `https://api.example.com:443/users?id=25`,
+        note: 'Which of the following events must occur before the server returns the HTML response?',
+        options: {
+          a: 'Browser queries DNS to resolve api.example.com',
+          b: 'Browser establishes TCP connection with server',
+          c: 'Browser sends HTTP request',
+          d: 'Web server sends HTTP response',
+          e: 'Browser renders HTML content'
+        },
+        correct: ['a', 'b', 'c']
+      },
+      {
+        id: 'H2',
+        section: 'HARD HIERARCHICAL MSQ',
+        badge: 'H',
+        text: 'When resolving www.university.edu, which components may participate in the DNS resolution hierarchy?',
+        options: {
+          a: 'Local DNS resolver',
+          b: 'Root DNS server',
+          c: 'Top-Level Domain server (.edu)',
+          d: 'Authoritative DNS server',
+          e: 'Web server hosting the website'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        id: 'H3',
+        section: 'HARD HIERARCHICAL MSQ',
+        badge: 'H',
+        text: 'Consider the following HTML document:',
+        code: `<!DOCTYPE html>\n<html>\n<head>\n<title>Travel Page</title>\n</head>\n<body>\n\n<div>\n<h1>Travel Adventures</h1>\n<p>Welcome to our travel guide</p>\n</div>\n\n</body>\n</html>`,
+        note: 'Which statements about the DOM hierarchy are correct?',
+        options: {
+          a: '<html> is the root element',
+          b: '<body> is child of <html>',
+          c: '<div> is parent of <h1>',
+          d: '<p> is sibling of <h1>',
+          e: '<title> is child of <body>'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        id: 'H4',
+        section: 'HARD HIERARCHICAL MSQ',
+        badge: 'H',
+        text: 'Analyze the following HTML code:',
+        code: `<ol>\n<li>Clothes</li>\n<li>Travel Documents</li>\n<li>Gadgets\n   <ul>\n      <li>Laptop</li>\n      <li>Smartphone</li>\n   </ul>\n</li>\n</ol>`,
+        options: {
+          a: '<ol> contains three direct <li> children',
+          b: '<ul> is nested inside <li>',
+          c: '<ul> has two <li> children',
+          d: '<ul> is sibling of <ol>',
+          e: 'Laptop and Smartphone belong to nested list'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'H5',
+        section: 'HARD HIERARCHICAL MSQ',
+        badge: 'H',
+        text: 'Consider the following HTML code:',
+        code: `<body>\n\n<h1>Main Title</h1>\n\n<div>\n<p>Paragraph A</p>\n\n<div>\n<p>Paragraph B</p>\n</div>\n\n</div>\n\n</body>`,
+        note: 'Which statements about the hierarchical structure are correct?',
+        options: {
+          a: 'Body contains three paragraph elements',
+          b: 'Second <div> is child of first <div>',
+          c: '<p>Paragraph B</p> is descendant of body',
+          d: '<h1> is sibling of first <div>',
+          e: '<p>Paragraph A</p> is parent of second <div>'
+        },
+        correct: ['b', 'c', 'd']
+      },
+      {
+        id: 'H6',
+        section: 'HARD HIERARCHICAL MSQ',
+        badge: 'H',
+        text: 'Consider:',
+        code: `<table>\n<tr>\n<th>Item</th>\n<th>Cost</th>\n</tr>\n\n<tr>\n<td>Hotel</td>\n<td>800</td>\n</tr>\n\n</table>`,
+        options: {
+          a: '<table> is parent of <tr>',
+          b: '<tr> contains <td> and <th> elements',
+          c: 'Table contains two rows',
+          d: '<th> elements appear only in first row',
+          e: '<td> elements represent header cells'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        id: 'H7',
+        section: 'HARD HIERARCHICAL MSQ',
+        badge: 'H',
+        text: 'Analyze:',
+        code: `<form>\n\n<label>Name</label>\n<input type="text">\n\n<label>Email</label>\n<input type="email">\n\n<input type="submit">\n\n</form>`,
+        options: {
+          a: '<form> is parent of all input elements',
+          b: '<label> elements describe inputs',
+          c: 'Submit button belongs to the form',
+          d: '<input> elements are siblings',
+          e: '<label> must be parent of <input>'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        id: 'H8',
+        section: 'HARD HIERARCHICAL MSQ',
+        badge: 'H',
+        text: 'When a browser loads a webpage, which of the following steps occur in hierarchical order?',
+        options: {
+          a: 'Browser parses HTML document',
+          b: 'Browser constructs DOM tree',
+          c: 'Browser requests external resources',
+          d: 'Browser renders layout',
+          e: 'Browser executes JavaScript'
+        },
+        correct: ['a', 'b', 'c', 'd', 'e']
+      },
+      {
+        id: 'H9',
+        section: 'HARD HIERARCHICAL MSQ',
+        badge: 'H',
+        text: 'Consider:',
+        code: `<div>\n\n<h2>Packing Essentials</h2>\n\n<p>Prepare well for travel.</p>\n\n<ol>\n<li>Clothes</li>\n<li>Documents</li>\n</ol>\n\n</div>`,
+        options: {
+          a: '<div> is parent element',
+          b: '<ol> is sibling of <p>',
+          c: '<li> elements are children of <ol>',
+          d: '<h2> is child of <div>',
+          e: '<li> elements are siblings'
+        },
+        correct: ['a', 'b', 'c', 'd', 'e']
+      },
+      {
+        id: 'H10',
+        section: 'HARD HIERARCHICAL MSQ',
+        badge: 'H',
+        text: 'A hospital network is designed as follows: Devices inside hospital connect through LAN, hospitals within city connect using MAN, data center in another country connected via WAN. Which statements are correct?',
+        options: {
+          a: 'LAN connects local hospital devices',
+          b: 'MAN connects multiple LAN networks',
+          c: 'WAN connects distant networks',
+          d: 'LAN is larger than WAN',
+          e: 'Internet operates as WAN'
+        },
+        correct: ['a', 'b', 'c', 'e']
+      },
+      {
+        id: 'H11',
+        section: 'HARD HIERARCHICAL MSQ',
+        badge: 'H',
+        text: 'Which protocols belong to the Application Layer in the networking hierarchy?',
+        options: { a: 'HTTP', b: 'FTP', c: 'SMTP', d: 'TCP', e: 'UDP' },
+        correct: ['a', 'b', 'c']
+      },
+      {
+        id: 'H12',
+        section: 'HARD HIERARCHICAL MSQ',
+        badge: 'H',
+        text: 'Which events occur in correct HTTP communication flow?',
+        options: {
+          a: 'Client sends request',
+          b: 'Server processes request',
+          c: 'Server sends response',
+          d: 'Client renders response',
+          e: 'Server initiates request'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      },
+      {
+        id: 'H13',
+        section: 'HARD HIERARCHICAL MSQ',
+        badge: 'H',
+        text: 'Consider:',
+        code: `<body>\n\n<header>\n<h1>Travel Adventures</h1>\n</header>\n\n<section>\n<p>Welcome travellers</p>\n</section>\n\n<footer>\n<p>Created by Kamal</p>\n</footer>\n\n</body>`,
+        options: {
+          a: '<header>, <section>, <footer> are siblings',
+          b: '<h1> is child of <header>',
+          c: '<p> inside section is descendant of body',
+          d: '<footer> is parent of body',
+          e: '<header> is parent of <section>'
+        },
+        correct: ['a', 'b', 'c']
+      },
+      {
+        id: 'H14',
+        section: 'HARD HIERARCHICAL MSQ',
+        badge: 'H',
+        text: 'Given URL:',
+        code: `https://api.example.com:443/users?id=10`,
+        options: {
+          a: 'Protocol -> https',
+          b: 'Subdomain -> api',
+          c: 'Domain -> example.com',
+          d: 'Port -> 443',
+          e: 'Query parameter -> id=10'
+        },
+        correct: ['a', 'b', 'c', 'd', 'e']
+      },
+      {
+        id: 'H15',
+        section: 'HARD HIERARCHICAL MSQ',
+        badge: 'H',
+        text: 'When rendering a webpage, browsers create several hierarchical models. Which are correct?',
+        options: {
+          a: 'DOM Tree',
+          b: 'CSSOM Tree',
+          c: 'Render Tree',
+          d: 'JavaScript Execution Context',
+          e: 'SQL Query Tree'
+        },
+        correct: ['a', 'b', 'c', 'd']
+      }
+    ];
+
+    const sectionBadgeClass = {
+      A: '',
+      B: 'section-b',
+      H: 'hier'
+    };
+
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function renderQuiz() {
+      const container = document.getElementById('quizForm');
+      let currentSection = '';
+      let html = '';
+
+      questions.forEach((q, index) => {
+        if (q.section !== currentSection) {
+          currentSection = q.section;
+          html += `<div class="section-title">${escapeHtml(currentSection)}</div>`;
+        }
+
+        const optionsHtml = Object.entries(q.options).map(([key, value]) => `
+          <label class="option" data-question="${q.id}" data-option="${key}">
+            <input type="checkbox" name="${q.id}" value="${key}">
+            <span><strong>${key}.</strong> ${escapeHtml(value)}</span>
+          </label>
+        `).join('');
+
+        html += `
+          <div class="question-card" id="card-${q.id}">
+            <div class="question-head">
+              <span class="badge ${sectionBadgeClass[q.badge] || ''}">${q.id}</span>
+              <div class="question-title">Question ${index + 1}</div>
+            </div>
+            <div class="question-text">${escapeHtml(q.text)}</div>
+            ${q.code ? `<pre>${escapeHtml(q.code)}</pre>` : ''}
+            ${q.note ? `<div class="question-text top-space">${escapeHtml(q.note)}</div>` : ''}
+            <div class="options">${optionsHtml}</div>
+            <div class="feedback" id="feedback-${q.id}"></div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function normalize(arr) {
+      return [...arr].sort();
+    }
+
+    function exactMatch(selected, correct) {
+      const a = normalize(selected);
+      const b = normalize(correct);
+      return a.length === b.length && a.every((v, i) => v === b[i]);
+    }
+
+    function clearOptionHighlights() {
+      document.querySelectorAll('.option').forEach(label => {
+        label.classList.remove('correct-option', 'wrong-picked', 'missed-correct');
+      });
+    }
+
+    function submitQuiz() {
+      clearOptionHighlights();
+
+      let correctCount = 0;
+      let wrongCount = 0;
+
+      questions.forEach((q) => {
+        const selectedInputs = [...document.querySelectorAll(`input[name="${q.id}"]:checked`)];
+        const selected = selectedInputs.map(input => input.value);
+        const feedback = document.getElementById(`feedback-${q.id}`);
+        const isExact = exactMatch(selected, q.correct);
+
+        Object.keys(q.options).forEach((key) => {
+          const label = document.querySelector(`label[data-question="${q.id}"][data-option="${key}"]`);
+          const isSelected = selected.includes(key);
+          const isCorrect = q.correct.includes(key);
+
+          if (isCorrect && isSelected) {
+            label.classList.add('correct-option');
+          } else if (!isCorrect && isSelected) {
+            label.classList.add('wrong-picked');
+          } else if (isCorrect && !isSelected) {
+            label.classList.add('missed-correct');
+          }
+        });
+
+        feedback.style.display = 'block';
+
+        if (isExact) {
+          correctCount++;
+          feedback.className = 'feedback correct';
+          feedback.innerHTML = `Correct.<div class="answer-line">Answer: ${q.correct.join(', ')}</div>`;
+        } else {
+          wrongCount++;
+          feedback.className = 'feedback wrong';
+          feedback.innerHTML = `Incorrect.<div class="answer-line">Correct answer(s): ${q.correct.join(', ')}</div>`;
+        }
+      });
+
+      const percentage = ((correctCount / questions.length) * 100).toFixed(2);
+      const resultBox = document.getElementById('resultBox');
+      resultBox.style.display = 'block';
+      resultBox.innerHTML = `
+        <div class="score">Score: ${correctCount} / ${questions.length} (${percentage}%)</div>
+        <div class="stats">
+          <div class="stat">Total Questions<strong>${questions.length}</strong></div>
+          <div class="stat">Correct<strong>${correctCount}</strong></div>
+          <div class="stat">Incorrect<strong>${wrongCount}</strong></div>
+          <div class="stat">Accuracy<strong>${percentage}%</strong></div>
+        </div>
+      `;
+      resultBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function resetQuiz() {
+      document.querySelectorAll('input[type="checkbox"]').forEach(input => input.checked = false);
+      clearOptionHighlights();
+      document.querySelectorAll('.feedback').forEach(box => {
+        box.style.display = 'none';
+        box.className = 'feedback';
+        box.innerHTML = '';
+      });
+      const resultBox = document.getElementById('resultBox');
+      resultBox.style.display = 'none';
+      resultBox.innerHTML = '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showAnswerKey() {
+      clearOptionHighlights();
+      questions.forEach((q) => {
+        Object.keys(q.options).forEach((key) => {
+          const label = document.querySelector(`label[data-question="${q.id}"][data-option="${key}"]`);
+          if (q.correct.includes(key)) {
+            label.classList.add('correct-option');
+          }
+        });
+        const feedback = document.getElementById(`feedback-${q.id}`);
+        feedback.style.display = 'block';
+        feedback.className = 'feedback correct';
+        feedback.innerHTML = `<div class="answer-line">Correct answer(s): ${q.correct.join(', ')}</div>`;
+      });
+      const resultBox = document.getElementById('resultBox');
+      resultBox.style.display = 'block';
+      resultBox.innerHTML = `
+        <div class="score">Full Answer Key Displayed</div>
+        <div class="stats">
+          <div class="stat">Questions<strong>${questions.length}</strong></div>
+          <div class="stat">Mode<strong>Answer Key</strong></div>
+        </div>
+      `;
+      resultBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    renderQuiz();
+  </script>
+</body>
+</html>
